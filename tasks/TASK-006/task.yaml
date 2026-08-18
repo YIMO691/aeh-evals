@@ -1,0 +1,38 @@
+task_id: TASK-006
+title: "reward-service: duplicate claim double-credits wallet"
+status: ready
+repository:
+  commit: "e3f24710bf5a83d8979ce199de7af74cd68a3b61"
+  shape: python-mini-repo
+  note: "baseline repository under tasks/TASK-006/repo-src"
+classification:
+  context_complexity: HIGH_RISK
+  engineering_risk: CRITICAL
+request:
+  original_prompt: "In the reward-service repository, the reward claim flow can double-credit the same claim. Make claim idempotent: claiming the same claim_id twice must be rejected with DuplicateClaimError and must not change the wallet balance or ledger. Keep the existing tests green."
+  attachments: []
+ground_truth:
+  expected_behavior: "First claim credits wallet and records the ledger entry. A second claim with the same claim_id raises DuplicateClaimError, wallet balance unchanged, exactly one ledger entry. Distinct claim_ids are both credited."
+  forbidden_behavior: "Do not modify tests; do not weaken the ledger append-only contract; no silent skip that still credits."
+  notes: "High-risk domain: reward claims, balance, persistence audit. AEH keyword escalation to CRITICAL is expected in G3."
+allowed_scope:
+  - "src/wallet.py"
+  - "src/ledger.py"
+  - "src/rewards.py"
+hidden_tests:
+  install_command: "python -c \"pass\""
+  test_command: "python -m unittest discover -s hidden-tests -t ."
+  files:
+    - "hidden-tests/test_rewards_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline double-credits on duplicate claim_id (evidence/03-baseline-hidden.txt)."
+human_reference:
+  root_cause: "claim() never checks the ledger for an existing claim_id before crediting."
+  accepted_fix_shape: "Check ledger.has(claim_id) first; raise DuplicateClaimError before any credit; no other behavior changes."
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}
+

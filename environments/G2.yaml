@@ -1,0 +1,18 @@
+group: G2
+purpose: "G1 + OpenSpec/Spec Kit：SDD/计划系统还能解决多少"
+components:
+  - name: AGENTS/CLAUDE.md
+    note: "与 G1 完全相同"
+  - name: Project Skill
+    note: "与 G1 完全相同"
+  - name: OpenSpec / Spec Kit
+    note: "版本在 harness.openspec_version 冻结"
+install_commands:
+  - "USER_RUNTIME: 按 OpenSpec/Spec Kit 官方文档安装并固定版本"
+forbidden:
+  - "AEH"
+  - "任何 AEH 组件（bootstrap/.aeh/aeh CLI）"
+frozen_fields: [repository.commit_sha, agent.vendor, agent.product, agent.version, agent.model,
+  harness.openspec_version, harness.skill_revision, environment.os, environment.python_or_dotnet,
+  environment.sandbox, environment.network, environment.timeout, input.task_prompt_sha256,
+  input.config_sha256]

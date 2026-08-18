@@ -1,0 +1,35 @@
+task_id: TASK-011
+title: "Unity/C# brownfield: hot-update version/rollback (placeholder)"
+status: placeholder
+needs: "owner_ground_truth: real repository snapshot, hidden tests and accepted fix shape from Owner"
+repository:
+  commit: "0000000000000000000000000000000000000000"
+  shape: unity-brownfield
+  note: "placeholder: commit SHA filled when Owner provides the real baseline repository"
+classification:
+  context_complexity: HIGH_RISK
+  engineering_risk: CRITICAL
+request:
+  original_prompt: "TO_BE_DEFINED"
+  attachments: []
+ground_truth:
+  expected_behavior: "TO_BE_DEFINED"
+  forbidden_behavior: "TO_BE_DEFINED"
+  notes: "placeholder: no ground truth is invented"
+allowed_scope:
+  - "TO_BE_DEFINED"
+hidden_tests:
+  install_command: "TO_BE_DEFINED"
+  test_command: "TO_BE_DEFINED"
+  files: []
+known_failure:
+  reproducible: false
+  description: "placeholder: baseline not yet captured"
+human_reference:
+  root_cause: "TO_BE_DEFINED"
+  accepted_fix_shape: "TO_BE_DEFINED"
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}

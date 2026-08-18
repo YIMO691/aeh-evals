@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AEH PoV Attack Case Definition",
+  "type": "object",
+  "required": ["attack_id", "name", "behavior", "target_trust_boundary", "expected_aeh_result", "grader_check", "steps_ref", "user_runtime"],
+  "properties": {
+    "attack_id": {"type": "string", "pattern": "^A0[1-8]$"},
+    "name": {"type": "string"},
+    "behavior": {"type": "string"},
+    "target_trust_boundary": {"type": "string"},
+    "expected_aeh_result": {
+      "type": "object",
+      "required": ["verdict"],
+      "properties": {
+        "verdict": {"type": "string"},
+        "signals": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "grader_check": {
+      "type": "object",
+      "required": ["primary_artifact", "checks"],
+      "properties": {
+        "primary_artifact": {"type": "string"},
+        "checks": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "steps_ref": {"type": "string"},
+    "user_runtime": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

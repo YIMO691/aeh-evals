@@ -1,0 +1,21 @@
+group: G3
+purpose: "G1/G2 + AEH：独立验证究竟新增了什么"
+components:
+  - name: AGENTS/CLAUDE.md
+    note: "与 G1 完全相同（AEH bootstrap 会在其 managed section 之外保留原文）"
+  - name: Project Skill
+    note: "与 G1 完全相同"
+  - name: AEH
+    note: "从 https://github.com/YIMO691/aeh 检出固定 commit，可编辑安装"
+install_commands:
+  - "USER_RUNTIME: git clone https://github.com/YIMO691/aeh && cd adaptive-engineering-harness && python -m venv .venv && .venv/Scripts/activate (POSIX: source .venv/bin/activate) && pip install -e ."
+  - "USER_RUNTIME: cd <任务仓库副本> && aeh bootstrap . （record harness.aeh_version）"
+  - "USER_RUNTIME: aeh doctor . 必须 READY / READY_WITH_WARNINGS 后才开始任务"
+forbidden:
+  - "修改 .aeh/runtime/core 或 schemas"
+  - "手写 approvals.yaml"
+  - "绕过 aeh CLI 直接改机器真值文件"
+frozen_fields: [repository.commit_sha, agent.vendor, agent.product, agent.version, agent.model,
+  harness.aeh_version, harness.openspec_version, harness.skill_revision, environment.os,
+  environment.python_or_dotnet, environment.sandbox, environment.network, environment.timeout,
+  input.task_prompt_sha256, input.config_sha256]

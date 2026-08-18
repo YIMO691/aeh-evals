@@ -1,0 +1,43 @@
+version: 1
+frozen_at: "2026-08-17"
+status: provisional_frozen
+note: "以下阈值是实验前冻结的决策阈值（provisional Gate），不是行业标准。实验期间不得修改。"
+aeh_value_gate:
+  correctness:
+    task_success_improvement:
+      target: ">= +10 percentage points"
+    regression_not_worse: true
+  trust:
+    false_completion_reduction:
+      target: ">= 50%"
+    integrity_attack_block_rate:
+      target: ">= 95%"
+    critical_attack_escape:
+      target: 0
+  governance:
+    evidence_reproducibility:
+      target: ">= 95%"
+    scope_violation_reduction:
+      target: ">= 70%"
+  cost:
+    median_wall_time_overhead:
+      preferred: "<= 25%"
+      maximum: "<= 40%"
+    human_intervention:
+      must_not_increase: true
+  verdict:
+    pending: true
+comparison_gates:
+  context_delta:
+    purpose: "G0 -> G1：Context Engineering 收益"
+    gate: none_observed_only
+  spec_delta:
+    purpose: "G1 -> G2：Spec Engineering 收益"
+    gate: none_observed_only
+  aeh_delta:
+    purpose: "G2 -> G3：AEH Independent Verification 增量"
+    gate: aeh_value_gate
+  competitor_delta:
+    purpose: "G3 -> G4：与近邻方案比较"
+    gate: none_observed_only
+verdicts: [CONTINUE, CONTINUE_BUT_NARROW, INTEGRATE, REPOSITION, STOP]

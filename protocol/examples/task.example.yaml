@@ -1,0 +1,35 @@
+task_id: TASK-001
+title: example-task
+status: ready
+repository:
+  commit: "0000000000000000000000000000000000000000"
+  shape: python-mini-repo
+  note: "synthetic baseline repository under tasks/TASK-001/repo-src"
+classification:
+  context_complexity: SIMPLE
+  engineering_risk: DIRECT
+request:
+  original_prompt: "Fix the off-by-one error in the example function and keep all existing tests green."
+  attachments: []
+ground_truth:
+  expected_behavior: "The function returns the correct range under all documented inputs."
+  forbidden_behavior: "Do not change unrelated modules or weaken existing tests."
+  notes: "Ground truth authored by the experiment owner before any run."
+allowed_scope:
+  - "src/example.py"
+hidden_tests:
+  install_command: "python -m pip install -e ."
+  test_command: "python -m unittest discover -s hidden_tests"
+  files:
+    - "hidden_tests/test_example_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline reproduces the documented bug on commit referenced above."
+human_reference:
+  root_cause: "Loop upper bound uses the wrong comparison operator."
+  accepted_fix_shape: "Change the loop condition only; no other file changes."
+scoring:
+  correctness: {weight: 1.0, method: hidden_tests_pass}
+  regression: {weight: 0.0, method: existing_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff}
+  integrity: {weight: 0.0, method: integrity_grader}

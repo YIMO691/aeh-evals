@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AEH PoV Run Manifest",
+  "description": "Frozen run record for the AEH Proof-of-Value experiment (PROTOCOL.md section 7).",
+  "type": "object",
+  "required": ["run_id", "task_id", "group", "repository", "agent", "harness", "environment", "input", "result"],
+  "properties": {
+    "run_id": {"type": "string", "pattern": "^RUN-[0-9]{4}$"},
+    "task_id": {"type": "string"},
+    "group": {"type": "string", "enum": ["G0", "G1", "G2", "G3", "G4"]},
+    "repository": {
+      "type": "object",
+      "required": ["url", "commit_sha", "dirty"],
+      "properties": {
+        "url": {"type": "string"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "dirty": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "agent": {
+      "type": "object",
+      "required": ["vendor", "product", "version", "model"],
+      "properties": {
+        "vendor": {"type": "string"},
+        "product": {"type": "string"},
+        "version": {"type": "string"},
+        "model": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "harness": {
+      "type": "object",
+      "required": ["aeh_version", "openspec_version", "skill_revision"],
+      "properties": {
+        "aeh_version": {"type": ["string", "null"]},
+        "openspec_version": {"type": ["string", "null"]},
+        "skill_revision": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "environment": {
+      "type": "object",
+      "required": ["os", "python_or_dotnet", "sandbox", "network", "timeout"],
+      "properties": {
+        "os": {"type": "string"},
+        "python_or_dotnet": {"type": "string"},
+        "sandbox": {"type": "string"},
+        "network": {"type": "string"},
+        "timeout": {"type": "number"}
+      },
+      "additionalProperties": true
+    },
+    "input": {
+      "type": "object",
+      "required": ["task_prompt_sha256", "config_sha256"],
+      "properties": {
+        "task_prompt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": true
+    },
+    "result": {
+      "type": "object",
+      "required": ["started_at", "finished_at"],
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time"},
+        "finished_at": {"type": "string", "format": "date-time"},
+        "status": {"type": "string", "enum": ["COMPLETED", "ABORTED", "INVALID_RUN"]},
+        "outcome": {"type": "string"},
+        "evidence_dir": {"type": "string"},
+        "metrics": {"type": "object"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

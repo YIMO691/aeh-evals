@@ -1,0 +1,36 @@
+task_id: TASK-003
+title: "pager: pagination off-by-one"
+status: ready
+repository:
+  commit: "a05d0d4520d504fa3927feaf851840462113f12c"
+  shape: python-mini-repo
+  note: "baseline repository under tasks/TASK-003/repo-src"
+classification:
+  context_complexity: BUG
+  engineering_risk: LIGHTWEIGHT
+request:
+  original_prompt: "In the pager repository, fix `paginate` so page numbering is 1-based and every page is correct, including the last partial page. Keep the existing tests green."
+  attachments: []
+ground_truth:
+  expected_behavior: "paginate(items, 1, 3) returns the first 3 items; the last page may be partial; page 0/negative raises ValueError."
+  forbidden_behavior: "Do not modify tests or change the function signature."
+  notes: "Ground truth authored by experiment owner before any run."
+allowed_scope:
+  - "src/pager.py"
+hidden_tests:
+  install_command: "python -c \"pass\""
+  test_command: "python -m unittest discover -s hidden-tests -t ."
+  files:
+    - "hidden-tests/test_pager_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline uses start = page*size, skipping the first page (evidence/03-baseline-hidden.txt)."
+human_reference:
+  root_cause: "Off-by-one: start index should be (page-1)*size."
+  accepted_fix_shape: "Correct the start index only; no other file changes."
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}
+

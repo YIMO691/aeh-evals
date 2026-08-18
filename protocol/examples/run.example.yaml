@@ -1,0 +1,36 @@
+run_id: RUN-0001
+task_id: TASK-001
+group: G0
+repository:
+  url: "local:tasks/TASK-001/repo-src"
+  commit_sha: "0000000000000000000000000000000000000000"
+  dirty: false
+agent:
+  vendor: example-vendor
+  product: example-agent
+  version: 1.0.0
+  model: example-model
+harness:
+  aeh_version: null
+  openspec_version: null
+  skill_revision: null
+environment:
+  os: "example-os"
+  python_or_dotnet: "python3.11"
+  sandbox: "none"
+  network: "on"
+  timeout: 1800
+input:
+  task_prompt_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+  config_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+result:
+  started_at: "2026-08-17T00:00:00+00:00"
+  finished_at: "2026-08-17T00:30:00+00:00"
+  status: COMPLETED
+  outcome: COMPLETED
+  evidence_dir: runs/RUN-0001/evidence
+  metrics:
+    wall_time_seconds: 1800
+    tokens: 0
+    tool_calls: 0
+    human_interventions: 0

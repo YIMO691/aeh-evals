@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AEH PoV Task Definition",
+  "type": "object",
+  "required": ["task_id", "title", "repository", "classification", "request", "ground_truth", "allowed_scope", "hidden_tests", "known_failure", "human_reference", "scoring", "status"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{3}$"},
+    "title": {"type": "string"},
+    "status": {"type": "string", "enum": ["ready", "placeholder"]},
+    "needs": {"type": "string"},
+    "repository": {
+      "type": "object",
+      "required": ["commit"],
+      "properties": {
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "shape": {"type": "string"},
+        "note": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "classification": {
+      "type": "object",
+      "required": ["context_complexity", "engineering_risk"],
+      "properties": {
+        "context_complexity": {"type": "string", "enum": ["SIMPLE", "BUG", "CROSS_MODULE", "HIGH_RISK"]},
+        "engineering_risk": {"type": "string", "enum": ["DIRECT", "LIGHTWEIGHT", "STANDARD", "CRITICAL"]}
+      },
+      "additionalProperties": true
+    },
+    "request": {
+      "type": "object",
+      "required": ["original_prompt"],
+      "properties": {
+        "original_prompt": {"type": "string"},
+        "attachments": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "ground_truth": {
+      "type": "object",
+      "required": ["expected_behavior", "forbidden_behavior"],
+      "properties": {
+        "expected_behavior": {"type": "string"},
+        "forbidden_behavior": {"type": "string"},
+        "notes": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "allowed_scope": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "hidden_tests": {
+      "type": "object",
+      "required": ["install_command", "test_command"],
+      "properties": {
+        "install_command": {"type": "string"},
+        "test_command": {"type": "string"},
+        "files": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "known_failure": {
+      "type": "object",
+      "required": ["reproducible"],
+      "properties": {
+        "reproducible": {"type": "boolean"},
+        "description": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "human_reference": {
+      "type": "object",
+      "required": ["root_cause", "accepted_fix_shape"],
+      "properties": {
+        "root_cause": {"type": "string"},
+        "accepted_fix_shape": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "scoring": {
+      "type": "object",
+      "required": ["correctness", "regression", "scope", "integrity"],
+      "properties": {
+        "correctness": {"type": "object"},
+        "regression": {"type": "object"},
+        "scope": {"type": "object"},
+        "integrity": {"type": "object"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

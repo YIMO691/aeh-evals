@@ -1,0 +1,38 @@
+task_id: TASK-004
+title: "top-service: config limit is ignored by run()"
+status: ready
+repository:
+  commit: "3374f3318f305c137dae51aecb3219b44d635847"
+  shape: python-mini-repo
+  note: "baseline repository under tasks/TASK-004/repo-src"
+classification:
+  context_complexity: CROSS_MODULE
+  engineering_risk: STANDARD
+request:
+  original_prompt: "In the top-service repository, make `run()` honor the `limit` value loaded from the config file when a config path is provided. Keep the existing tests green."
+  attachments: []
+ground_truth:
+  expected_behavior: "run(records, config_path) with a file containing limit=2 returns at most 2 records; without a config path the default of 10 remains."
+  forbidden_behavior: "Do not modify tests; do not change load_config parsing semantics or top_items ordering semantics."
+  notes: "Cross-module task: config -> main -> service wiring."
+allowed_scope:
+  - "src/config.py"
+  - "src/service.py"
+  - "src/main.py"
+hidden_tests:
+  install_command: "python -c \"pass\""
+  test_command: "python -m unittest discover -s hidden-tests -t ."
+  files:
+    - "hidden-tests/test_main_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline run() calls load_config but discards the result and always uses the default limit (evidence/03-baseline-hidden.txt)."
+human_reference:
+  root_cause: "Config is loaded but not passed to top_items."
+  accepted_fix_shape: "Pass the loaded limit from config into top_items; no other behavior changes."
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}
+

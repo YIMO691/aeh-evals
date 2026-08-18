@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Local environments
+.venv/
+venv/
+
+# Experiment artifacts: only the template is committed; real runs stay local
+runs/RUN-*/
+!runs/RUN-0000-template/
+!runs/RUN-0000-template/**

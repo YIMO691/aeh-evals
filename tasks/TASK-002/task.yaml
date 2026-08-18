@@ -1,0 +1,36 @@
+task_id: TASK-002
+title: "settings-reader: stale in-process cache"
+status: ready
+repository:
+  commit: "124934e2ffb8d7f8cf000b386b22d2869769a8ec"
+  shape: python-mini-repo
+  note: "baseline repository under tasks/TASK-002/repo-src"
+classification:
+  context_complexity: BUG
+  engineering_risk: LIGHTWEIGHT
+request:
+  original_prompt: "In the settings-reader repository, fix the settings loader so callers always observe the latest file contents. Keep the existing tests green."
+  attachments: []
+ground_truth:
+  expected_behavior: "After the settings file changes on disk, get()/load_settings() return the new values without restarting the process."
+  forbidden_behavior: "Do not modify tests or change the key=value file format semantics."
+  notes: "Ground truth authored by experiment owner before any run."
+allowed_scope:
+  - "src/settings.py"
+hidden_tests:
+  install_command: "python -c \"pass\""
+  test_command: "python -m unittest discover -s hidden-tests -t ."
+  files:
+    - "hidden-tests/test_settings_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline cache never invalidates after the file changes (evidence/03-baseline-hidden.txt)."
+human_reference:
+  root_cause: "The cache is keyed only by path and never invalidated on file change."
+  accepted_fix_shape: "Invalidate/reload based on file mtime or always re-read; no other file changes."
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}
+

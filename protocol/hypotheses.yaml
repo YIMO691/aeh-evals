@@ -1,0 +1,34 @@
+version: 1
+frozen_at: "2026-08-17"
+status: frozen_phase0
+hypotheses:
+  H1:
+    id: H1
+    name: Correctness
+    statement: "在相同 Coding Agent、相同任务、相同仓库、相同工具条件下，引入 AEH 后真实任务最终正确率提高。"
+    metric_refs: [task_success_rate]
+    failure_meaning: "如果没有提升，AEH 核心价值不足。"
+  H2:
+    id: H2
+    name: False Completion
+    statement: "AEH 显著降低「AI 说完成但其实没完成」的发生率。"
+    metric_refs: [false_completion_rate]
+    failure_meaning: "如果拦不住假完成，Verifier 定位不成立。"
+  H3:
+    id: H3
+    name: Integrity
+    statement: "AEH 能阻止测试篡改、越范围修改、伪造 Evidence、使用过期 Evidence。"
+    metric_refs: [test_mutation_rate, integrity_attack_block_rate, scope_violation_rate, evidence_reproducibility]
+    failure_meaning: "如果可轻易绕过，独立验证不成立。"
+  H4:
+    id: H4
+    name: Auditability
+    statement: "AEH 能重建「为什么改、改了什么、怎么证明」的证据链。"
+    metric_refs: [evidence_reproducibility]
+    failure_meaning: "如果仍靠对话回忆，治理价值不足。"
+  H5:
+    id: H5
+    name: Economics
+    statement: "获得这些收益的额外成本处于可接受范围。"
+    metric_refs: [median_wall_time_overhead, human_intervention]
+    failure_meaning: "如果可靠性 +2%、成本 +100%，同样不成立。"

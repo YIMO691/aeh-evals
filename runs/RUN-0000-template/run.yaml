@@ -1,0 +1,36 @@
+run_id: RUN-0000
+task_id: TASK-001
+group: G0
+repository:
+  url: "local:tasks/TASK-001/repo-src"
+  commit_sha: "0000000000000000000000000000000000000000"
+  dirty: false
+agent:
+  vendor: "TO_BE_FILLED"
+  product: "TO_BE_FILLED"
+  version: "TO_BE_FILLED"
+  model: "TO_BE_FILLED"
+harness:
+  aeh_version: null
+  openspec_version: null
+  skill_revision: null
+environment:
+  os: "TO_BE_FILLED"
+  python_or_dotnet: "TO_BE_FILLED"
+  sandbox: "TO_BE_FILLED"
+  network: "TO_BE_FILLED"
+  timeout: 1800
+input:
+  task_prompt_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+  config_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+result:
+  started_at: "2026-08-17T00:00:00+00:00"
+  finished_at: "2026-08-17T00:00:00+00:00"
+  status: COMPLETED
+  outcome: "TO_BE_FILLED"
+  evidence_dir: "runs/RUN-0000/evidence"
+  metrics:
+    wall_time_seconds: 0
+    tokens: 0
+    tool_calls: 0
+    human_interventions: 0

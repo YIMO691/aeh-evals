@@ -1,0 +1,37 @@
+task_id: TASK-005
+title: "ledger-api: add summary aggregation API"
+status: ready
+repository:
+  commit: "8d24427c1083d4ac694641ca6f0e57f20a709e20"
+  shape: python-mini-repo
+  note: "baseline repository under tasks/TASK-005/repo-src"
+classification:
+  context_complexity: CROSS_MODULE
+  engineering_risk: STANDARD
+request:
+  original_prompt: "In the ledger-api repository, add a `get_summary(store)` function to the API that returns {'count': N, 'total': M} over the store's records. Keep the existing tests green."
+  attachments: []
+ground_truth:
+  expected_behavior: "get_summary returns {'count': 2, 'total': 30} for records of amount 10 and 20, and {'count': 0, 'total': 0} for an empty store."
+  forbidden_behavior: "Do not modify tests; do not break list_records or the Store.add contract."
+  notes: "Cross-module task: storage model + API surface."
+allowed_scope:
+  - "src/api.py"
+  - "src/storage.py"
+hidden_tests:
+  install_command: "python -c \"pass\""
+  test_command: "python -m unittest discover -s hidden-tests -t ."
+  files:
+    - "hidden-tests/test_api_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline has no get_summary function (evidence/03-baseline-hidden.txt)."
+human_reference:
+  root_cause: "Summary API was never implemented."
+  accepted_fix_shape: "Add get_summary to api.py using store.records; no other behavior changes."
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}
+

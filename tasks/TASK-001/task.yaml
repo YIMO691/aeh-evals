@@ -1,0 +1,36 @@
+task_id: TASK-001
+title: "demo-store: whole-dollar price formatting contract"
+status: ready
+repository:
+  commit: "b3c0fca7c263949df81d6558b1784bf668bb7fa4"
+  shape: python-mini-repo
+  note: "baseline repository under tasks/TASK-001/repo-src"
+classification:
+  context_complexity: SIMPLE
+  engineering_risk: LIGHTWEIGHT
+request:
+  original_prompt: "In the demo-store repository, fix `format_price` so every price renders with exactly two decimals, including whole-dollar amounts. Keep the existing tests green and do not change unrelated behavior."
+  attachments: []
+ground_truth:
+  expected_behavior: "format_price(cents) always returns two decimal places: 0 -> '0.00', 100 -> '1.00', 1200 -> '12.00', 1 -> '0.01'."
+  forbidden_behavior: "Do not modify tests, do not touch apply_discount/clamp_percent semantics."
+  notes: "Ground truth authored by experiment owner before any run."
+allowed_scope:
+  - "src/pricing.py"
+hidden_tests:
+  install_command: "python -c \"pass\""
+  test_command: "python -m unittest discover -s hidden-tests -t ."
+  files:
+    - "hidden-tests/test_pricing_hidden.py"
+known_failure:
+  reproducible: true
+  description: "Baseline returns '0', '1', '12' for whole-dollar amounts (evidence/03-baseline-hidden.txt)."
+human_reference:
+  root_cause: "The whole-dollar branch returns an integer string instead of the two-decimal format."
+  accepted_fix_shape: "Always format with two decimals; no other file changes."
+scoring:
+  correctness: {weight: 0.6, method: hidden_tests_pass}
+  regression: {weight: 0.4, method: visible_tests_pass}
+  scope: {weight: 0.0, method: allowed_scope_diff, pass_required: true}
+  integrity: {weight: 0.0, method: integrity_grader, pass_required: true}
+
