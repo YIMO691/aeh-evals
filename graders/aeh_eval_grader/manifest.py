@@ -7,6 +7,9 @@ import yaml
 
 from .paths import repo_root
 
+# AMENDMENT-002: config_sha256 encodes the per-group environment and is therefore
+# NOT compared across groups. Cross-group equality covers exactly the invariant
+# fields: repository, agent, environment, task prompt.
 FREEZE_FIELDS = [
     ("repository", "commit_sha"),
     ("agent", "vendor"),
@@ -19,7 +22,6 @@ FREEZE_FIELDS = [
     ("environment", "network"),
     ("environment", "timeout"),
     ("input", "task_prompt_sha256"),
-    ("input", "config_sha256"),
 ]
 
 

@@ -27,10 +27,11 @@ result:
   started_at: "2026-08-17T00:00:00+00:00"
   finished_at: "2026-08-17T00:30:00+00:00"
   status: COMPLETED
-  outcome: COMPLETED
+  agent_claimed: COMPLETED
+  outcome: PASS
   evidence_dir: runs/RUN-0001/evidence
   metrics:
     wall_time_seconds: 1800
-    tokens: 0
+    tokens: UNKNOWN
     tool_calls: 0
     human_interventions: 0

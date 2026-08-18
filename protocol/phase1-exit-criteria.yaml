@@ -1,0 +1,43 @@
+phase: PHASE_1_DRY_RUN_VALIDATION
+protocol_version: 1.5
+
+runs:
+  expected: 4
+  completed: 4
+  valid: 4
+
+repo_restore:
+  deterministic: PASS
+
+group_isolation:
+  G0_G1_G2_G3_only_intended_delta: PASS
+
+hidden_test_secrecy:
+  verdict: PASS
+
+grader:
+  deterministic_replay: PASS
+  false_completion_detection: PASS
+  invalid_run_detection: PASS
+
+metrics:
+  wall_time: AVAILABLE
+  tool_calls: AVAILABLE
+  token_usage: AVAILABLE_OR_EXPLICITLY_UNAVAILABLE
+  human_intervention: AVAILABLE
+
+g3:
+  actual_aeh_execution: PASS
+  evidence_generated: PASS
+
+reproducibility:
+  run_bundle_self_sufficient: PASS
+
+protocol_changes_required:
+  false
+
+verdict:
+  DRY_RUN_VALIDATED
+
+next_phase_started:
+  false

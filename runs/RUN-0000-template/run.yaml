@@ -27,10 +27,11 @@ result:
   started_at: "2026-08-17T00:00:00+00:00"
   finished_at: "2026-08-17T00:00:00+00:00"
   status: COMPLETED
+  agent_claimed: NOT_RECORDED
   outcome: "TO_BE_FILLED"
   evidence_dir: "runs/RUN-0000/evidence"
   metrics:
     wall_time_seconds: 0
-    tokens: 0
+    tokens: UNKNOWN
     tool_calls: 0
     human_interventions: 0

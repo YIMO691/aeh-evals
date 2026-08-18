@@ -20,7 +20,7 @@ allowed_scope:
   - "src/storage.py"
 hidden_tests:
   install_command: "python -c \"pass\""
-  test_command: "python -m unittest discover -s hidden-tests -t ."
+  test_command: "grader: test_grader.run_tests(repo=workdir, start_dir=<task>/hidden-tests, top_dir=<task dir>, pythonpath=<workdir>/src)"
   files:
     - "hidden-tests/test_api_hidden.py"
 known_failure:

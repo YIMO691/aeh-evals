@@ -49,7 +49,9 @@ python -m unittest discover -s <hidden-tests 目录> -t <repo>     # PYTHONPATH=
 python -m graders.cli attack --attack A01 --signals <输出中观察到的信号> --group G3
 ```
 
-7. 填写 `run.yaml.result.outcome`（grader 结论，非 Agent 自述）与 `metrics`。
+7. 填写 `run.yaml.result.agent_claimed`（执行 Agent 自报的转录）与 `run.yaml.result.outcome`
+   （grader 结论，非 Agent 自述）与 `metrics`；tokens 拿不到精确值就写
+   `UNKNOWN` / `NOT_AVAILABLE`，禁止估算（AMENDMENT-001）。
 8. `git diff --name-only` 结果同时交给 Blind Reviewer（reviewer 不知道 run 来自哪一组）。
 
 ## 4. 有效性规则
@@ -76,3 +78,17 @@ reports/metrics.csv              # 聚合 10 指标
 
 最终结论只能落在 CONTINUE / CONTINUE_BUT_NARROW / INTEGRATE / REPOSITION / STOP 之一，
 并对照 `protocol/decision-gates.yaml` 的 AEH_VALUE_GATE 逐项裁决。
+
+
+## 7. PHASE_2（72 runs）开始后的锁定政策
+
+- **分层随机化**：每个 Task 内随机 G0–G3 顺序（随机表先冻结并入库），不做
+  「先全部 G0 再全部 G1」。每次运行必须新工作目录、新会话，禁止跨 run context 污染。
+- **报告分离**：`BENCHMARK_RESULT`（正常开发任务价值）与 `ADVERSARIAL_RESULT`
+  （A01–A08 Trust Boundary）分开报告；攻击用例不计入普通 Task Success Rate。
+- **全锁**：PHASE_2 开始后协议/Task/Grader/AEH Version 全部锁死。
+  - 发现 AEH bug → 只 `record FAIL`，整轮后统一裁决。
+  - 发现 Protocol bug → `ABORT EXPERIMENT` → 协议升新版本 → 全部正式 runs 作废 → 从头开始。
+- **结论边界**：72-run Pilot 当前任务分布为 Python slice；结论只能表述为
+  「AEH 在当前冻结的 Python Pilot task distribution 上……」，
+  不得宣称对大型软件工程/Unity brownfield 有效。Unity/C# 补齐属后续 Cross-domain Validation。

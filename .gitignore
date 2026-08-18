@@ -5,7 +5,9 @@ __pycache__/
 
 # Local environments
 .venv/
+.venv-aeh/
 venv/
+.aeh-src/
 
 # Experiment artifacts: only the template is committed; real runs stay local
 runs/RUN-*/

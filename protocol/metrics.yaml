@@ -1,4 +1,4 @@
-version: 1
+version: 1.5
 frozen_at: "2026-08-17"
 metrics:
   task_success_rate:
@@ -81,3 +81,4 @@ metrics:
     direction: lower_better
     unit: "ratio"
     collection_point: "run.yaml.metrics.wall_time_seconds/tokens/tool_calls"
+    token_policy: "tokens 能精确采集则记录数值；不能则显式 UNKNOWN 或 NOT_AVAILABLE，禁止估算（AMENDMENT-001）"
