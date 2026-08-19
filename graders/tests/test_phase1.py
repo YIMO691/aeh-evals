@@ -3,7 +3,7 @@ import shutil
 import tempfile
 import unittest
 
-from aeh_eval_grader import aeh_exec, attack, manifest, outcome, report, restore, secrecy, sufficiency
+from aeh_eval_grader import aeh_exec, attack, g3_runner, manifest, outcome, report, restore, secrecy, sufficiency
 from aeh_eval_grader.paths import repo_root
 
 
@@ -116,6 +116,33 @@ class TestAehExec(unittest.TestCase):
             self.assertTrue(result["artifacts_present"], result)
             self.assertTrue(result["validator_replay"]["executed"])
             self.assertEqual(result["validator_replay"]["verdict"], "BLOCKED_CHANGE_STATE")
+
+    def test_replay_reports_status_and_overall_separately(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = self._make_tree(tmp, True)
+            replay = os.path.join(tmp, "replay.txt")
+            with open(replay, "w", encoding="utf-8") as f:
+                f.write('{"status": "VERIFY_COMPLETE", "overall": "MERGE_READY"}')
+            result = aeh_exec.check_aeh_evidence(work, "agent never called aeh", replay)
+            replay_result = result["validator_replay"]
+            self.assertEqual(replay_result["status"], "VERIFY_COMPLETE")
+            self.assertEqual(replay_result["overall"], "MERGE_READY")
+            self.assertEqual(replay_result["verdict"], "MERGE_READY")
+
+
+class TestG3RunnerCommand(unittest.TestCase):
+    def test_positional_target_commands_do_not_receive_workdir_option(self):
+        command = g3_runner._build_aeh_command(
+            "aeh", ["bootstrap", "C:/work"], "C:/work", add_workdir_option=False)
+        self.assertEqual(command, ["aeh", "bootstrap", "C:/work"])
+
+    def test_change_commands_receive_workdir_option(self):
+        command = g3_runner._build_aeh_command(
+            "aeh", ["change", "verify", "CHG-1"], "C:/work")
+        self.assertEqual(
+            command,
+            ["aeh", "change", "verify", "CHG-1", "--workdir", "C:/work"],
+        )
 
 
 class TestSufficiency(unittest.TestCase):

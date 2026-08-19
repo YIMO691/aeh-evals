@@ -40,23 +40,30 @@ def _glob_exists(root, pattern):
     return found
 
 
-def _replay_verdict(replay_file):
-    """Extract the AEH validator verdict from a replay log."""
+def _replay_result(replay_file):
+    """Extract execution status and acceptance verdict from a replay log."""
     if not replay_file or not os.path.isfile(replay_file):
-        return None
+        return {"status": None, "overall": None, "verdict": None}
     with open(replay_file, "r", encoding="utf-8", errors="ignore") as f:
         text = f.read()
     try:
         data = yaml.safe_load(text)
-        if isinstance(data, dict) and data.get("status"):
-            return str(data["status"])
+        if isinstance(data, dict):
+            status = data.get("status")
+            overall = data.get("overall")
+            if status is not None or overall is not None:
+                return {
+                    "status": str(status) if status is not None else None,
+                    "overall": str(overall) if overall is not None else None,
+                    "verdict": str(overall or status),
+                }
     except Exception:
         pass
     for marker in ("BLOCKED_CHANGE_STATE", "BLOCKED_RUNTIME_INTEGRITY", "MERGE_READY",
                    "READY_WITH_WARNINGS"):
         if marker in text:
-            return marker
-    return "UNKNOWN"
+            return {"status": None, "overall": marker, "verdict": marker}
+    return {"status": None, "overall": None, "verdict": "UNKNOWN"}
 
 
 def check_aeh_evidence(work_dir, session_log=None, replay_file=None):
@@ -83,10 +90,15 @@ def check_aeh_evidence(work_dir, session_log=None, replay_file=None):
         session_text = ""
     cli_by_agent = ("aeh " in session_text or "aeh." in session_text or "aeh\n" in session_text)
 
+    replay = _replay_result(replay_file)
     return {
         "artifacts_present": artifacts_present,
         "aeh_cli_by_agent": cli_by_agent,
-        "validator_replay": {"executed": bool(replay_file and os.path.isfile(replay_file)),
-                             "verdict": _replay_verdict(replay_file)},
+        "validator_replay": {
+            "executed": bool(replay_file and os.path.isfile(replay_file)),
+            "status": replay["status"],
+            "overall": replay["overall"],
+            "verdict": replay["verdict"],
+        },
         "artifacts": artifacts,
     }

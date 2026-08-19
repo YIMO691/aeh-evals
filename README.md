@@ -37,3 +37,12 @@ G3 + AEH（第二阶段加 G4 近邻方案）。试点规模 6 任务 × 4 组 �
 本仓库不替任何人跑 Agent。真实实验 = 你（Owner）在本机/CI 执行；每 run 提交
 `run.yaml`（schema: `protocol/run-manifest.schema.json`）与原始证据，判定一律由
 `graders/` 与独立 Reviewer 完成，执行 Agent 不得给自己的 run 打分。
+
+## 当前证据状态
+
+- Phase 1 v1.5：历史 dry-run，证据命名空间 `EVAL-P1-*`。
+- Phase 1.1 v1.6：`PHASE_1_1_FROZEN_AND_REPLAYED`，证据命名空间 `EVAL-P11-*`。
+- Phase 1.1 只验证冻结协议和 External Runner 最小机制，不证明 AEH 产品有效性。
+- Phase 2 / 72-run：`authorized=false`；当前动作是 `STOP`。
+
+详见 `reports/PHASE_1_1_RESULT.md` 与 `reports/PHASE_1_1_CLOSURE.md`。

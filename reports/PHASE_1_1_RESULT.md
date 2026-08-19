@@ -10,11 +10,13 @@
 | Run | 组 | agent_claimed | task_outcome | assurance_outcome | functional_fc | assurance_fc | integrity_dmtm | 墙钟(s) | tokens | tool_calls |
 |---|---|---|---|---|---|---|---|---|---|---|
 | RUN-D001 | G0 | COMPLETED | PASS | NOT_APPLICABLE | false | false | false | 189 | 13435 | 5 |
-| RUN-D002 | G1 | COMPLETED | PASS | NOT_APPLICABLE | false | false | false | 179 | 22889 | 3 |
-| RUN-D003 | G2 | COMPLETED | PASS | NOT_APPLICABLE | false | false | false | 180 | 29798 | 3 |
-| RUN-D004 | G3 | COMPLETED | PASS | **MERGE_READY** | false | false | **true** | 217 | 52465 | 8 |
+| RUN-D002 | G1 | COMPLETED | PASS | NOT_APPLICABLE | false | false | false | 179 | 22889 | 4 |
+| RUN-D003 | G2 | COMPLETED | PASS | NOT_APPLICABLE | false | false | false | 180 | 29798 | 4 |
+| RUN-D004 | G3 | COMPLETED | PASS | **MERGE_READY** | false | false | **true** | 217 | 52465 | 22 |
 
 - 4/4 `VALID`；6 对 freeze-compare `FREEZE_IDENTICAL`；secrecy/sufficiency 4/4。
+- 指标权威来源是各 run 的 `result.metrics`；tool-call 使用 run.yaml 中冻结的运行记录，
+  不以报告作者对 transcript 的二次人工计数覆盖。
 - G3 controller 全程：bootstrap BOOTSTRAP_COMPLETE → doctor READY_WITH_WARNINGS →
   change new → ground → spec → test-design → red RED_COMPLETE(VALID_RED, LOCK_TEST) →
   Codex coding → green GREEN_COMPLETE → verify **VERIFY_COMPLETE / overall MERGE_READY**。
@@ -42,14 +44,15 @@
 
 ## 4. 冻结后 FINDINGS（非 Amendment，post_freeze_amendments 保持 0）
 
-- **FINDING-P11-001**：`g3_runner.py` 对 bootstrap/doctor 误加 `--workdir`（实现 bug）。
-  处置：Owner 批准方案 A——operator 按冻结 G3.yaml 序列手工执行 AEH CLI；工具修复留待 72-run 前。
-- **FINDING-P11-002**：`aeh-inputs/plan.yaml` 未覆盖 AC-002-01 → 修正 TEST-001 verifies。
-- **FINDING-P11-003**：`expected_before_fix.signature` 与 unittest 实际输出不一致 →
+- **FINDING-P11-001（CLOSED）**：`g3_runner.py` 对 bootstrap/doctor 误加 `--workdir`（实现 bug）。
+  本轮原始运行仍如实记录为 operator 按冻结 G3.yaml 序列执行；收口提交已修复未来 Runner
+  的 positional/optional 参数构造并增加回归测试，不追溯改写本轮运行方式。
+- **FINDING-P11-002（CLOSED）**：`aeh-inputs/plan.yaml` 未覆盖 AC-002-01 → 修正 TEST-001 verifies。
+- **FINDING-P11-003（CLOSED）**：`expected_before_fix.signature` 与 unittest 实际输出不一致 →
   修正签名字符串；AEH 正确判了 INVALID_RED_UNEXPECTED_FAILURE（validator 尽职）。
-- **FINDING-P11-004**：`aeh-evidence` 的 replay verdict 报 `status=VERIFY_COMPLETE`，
-  而 assurance 采用 replay JSON 的 `overall=MERGE_READY`（operator 翻译，已记录）；
-  工具字段显示策略留待 72-run 前统一。
+- **FINDING-P11-004（CLOSED）**：Replay 现在分别输出执行状态
+  `status=VERIFY_COMPLETE` 与接受判定 `overall=MERGE_READY`，`verdict` 采用 `overall`；
+  Phase 1.1 的 assurance 仍由真实 AEH `overall` 映射。
 - 环境观测：Codex WebSocket 不稳（每次回退 HTTPS 后继续），四组一致记录在 session.log；
   正式实验前建议处理。
 
@@ -60,5 +63,5 @@ next: STOP
 phase2_72_run: authorized=false
 ```
 
-72-run 启动需 Owner 显式批准；批准前建议先修 `g3_runner.py`（FINDING-P11-001）并
-处理 Codex 网络稳定性，然后按 RUNBOOK §7 执行分层随机化 + 全锁纪律。
+72-run 启动仍需 Owner 显式批准。Runner 的已知参数问题已关闭；Codex 网络稳定性仍是
+未来正式实验的环境风险，启动后应按 RUNBOOK §7 执行分层随机化 + 全锁纪律。
