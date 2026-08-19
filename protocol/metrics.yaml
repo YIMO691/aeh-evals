@@ -1,4 +1,4 @@
-version: 1.5
+version: 1.6
 frozen_at: "2026-08-17"
 metrics:
   task_success_rate:
@@ -16,7 +16,15 @@ metrics:
     formula: "false_completed_runs / completed_runs"
     direction: lower_better
     unit: "percentage"
-    collection_point: "run.yaml.outcome == COMPLETED vs grader verdict"
+    collection_point: "run.yaml.result.false_completion.functional"
+  assurance_false_completion:
+    id: assurance_false_completion
+    name: Assurance False Completion
+    definition: "Agent 自报 COMPLETED、功能测试 PASS，但 AEH assurance 判 BLOCKED 的比例（v1.6）。"
+    formula: "assurance_false_completed_runs / completed_runs"
+    direction: lower_better
+    unit: "percentage"
+    collection_point: "run.yaml.result.false_completion.assurance"
   requirement_coverage:
     id: requirement_coverage
     name: Requirement Coverage

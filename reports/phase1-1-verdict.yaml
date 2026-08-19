@@ -1,0 +1,71 @@
+freeze:
+  amendments_total: 6
+  post_freeze_amendments: 0
+g3:
+  aeh_cli_by_agent: false
+  aeh_verify_overall: MERGE_READY
+  aeh_verify_status: VERIFY_COMPLETE
+  artifacts_present: true
+  g3_assurance_matches_aeh_verdict: true
+  treatment: external_aeh_assurance_runner (route B)
+  validator_replay_verdict: VERIFY_COMPLETE
+group_isolation:
+  freeze_pairs_identical: 6
+  pairs:
+  - - RUN-D001
+    - RUN-D002
+    - 0
+  - - RUN-D001
+    - RUN-D003
+    - 0
+  - - RUN-D001
+    - RUN-D004
+    - 0
+  - - RUN-D002
+    - RUN-D003
+    - 0
+  - - RUN-D002
+    - RUN-D004
+    - 0
+  - - RUN-D003
+    - RUN-D004
+    - 0
+hidden_test_secrecy: PASS
+next: STOP
+phase2_72_run:
+  authorized: false
+repo_restore:
+  deterministic: PASS
+  expected: 3374f3318f305c137dae51aecb3219b44d635847
+  head: 3374f3318f305c137dae51aecb3219b44d635847
+result_model:
+  outcomes:
+    RUN-D001:
+      agent_claimed: COMPLETED
+      assurance_outcome: NOT_APPLICABLE
+      integrity_dmtm: false
+      task_outcome: PASS
+    RUN-D002:
+      agent_claimed: COMPLETED
+      assurance_outcome: NOT_APPLICABLE
+      integrity_dmtm: false
+      task_outcome: PASS
+    RUN-D003:
+      agent_claimed: COMPLETED
+      assurance_outcome: NOT_APPLICABLE
+      integrity_dmtm: false
+      task_outcome: PASS
+    RUN-D004:
+      agent_claimed: COMPLETED
+      assurance_outcome: MERGE_READY
+      integrity_dmtm: true
+      task_outcome: PASS
+  split_present: true
+run_self_sufficiency: PASS
+runs:
+  completed: 4
+  expected: 4
+  pass: true
+  valid: 4
+sandbox_decision: workspace-write
+verdict: PHASE_1_1_FROZEN_AND_REPLAYED

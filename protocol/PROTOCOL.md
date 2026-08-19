@@ -1,6 +1,6 @@
 # AEH Proof-of-Value Pilot — PROTOCOL
 
-> 状态：**FROZEN（协议版本 v1.5，2026-08-17；v1.0 于 PHASE 0 冻结，AMENDMENT-001~005 升级）。
+> 状态：**FROZEN（协议版本 v1.6，2026-08-17；v1.0 于 PHASE 0 冻结，AMENDMENT-001~006 升级）。
 > 本文件是实验的宪法：实验期间任何字段变更都意味着本协议失效，必须先停实验、改协议、
 > 登记 Amendment、重新开始受影响的部分（见 `protocol/AMENDMENTS.md`）。
 

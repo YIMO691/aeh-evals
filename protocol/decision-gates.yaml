@@ -1,4 +1,4 @@
-version: 1.5
+version: 1.6
 frozen_at: "2026-08-17"
 status: provisional_frozen
 note: "以下阈值是实验前冻结的决策阈值（provisional Gate），不是行业标准。实验期间不得修改。"

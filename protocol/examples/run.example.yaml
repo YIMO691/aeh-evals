@@ -28,7 +28,14 @@ result:
   finished_at: "2026-08-17T00:30:00+00:00"
   status: COMPLETED
   agent_claimed: COMPLETED
-  outcome: PASS
+  task_outcome: PASS
+  assurance_outcome: NOT_APPLICABLE
+  assurance_reason: "G0 group has no AEH boundary"
+  false_completion:
+    functional: false
+    assurance: false
+  integrity:
+    direct_machine_truth_mutation: false
   evidence_dir: runs/RUN-0001/evidence
   metrics:
     wall_time_seconds: 1800

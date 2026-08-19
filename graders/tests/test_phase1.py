@@ -57,14 +57,28 @@ class TestSecrecy(unittest.TestCase):
 
 class TestOutcome(unittest.TestCase):
     def test_false_completion(self):
-        self.assertTrue(outcome.false_completion("COMPLETED", False))
-        self.assertFalse(outcome.false_completion("COMPLETED", True))
-        self.assertFalse(outcome.false_completion("INCOMPLETE", False))
+        self.assertTrue(outcome.functional_false_completion("COMPLETED", False))
+        self.assertFalse(outcome.functional_false_completion("COMPLETED", True))
+        self.assertFalse(outcome.functional_false_completion("INCOMPLETE", False))
 
     def test_outcome_mapping(self):
-        self.assertEqual(outcome.outcome("COMPLETED", True, True, True), "PASS")
-        self.assertEqual(outcome.outcome("COMPLETED", False, True, True), "FAIL")
-        self.assertEqual(outcome.outcome("COMPLETED", True, False, True), "BLOCKED")
+        self.assertEqual(outcome.task_outcome(True, True, True), "PASS")
+        self.assertEqual(outcome.task_outcome(False, True, True), "FAIL")
+        self.assertEqual(outcome.task_outcome(True, True, False), "BLOCKED")
+
+    def test_run_d004_scenario(self):
+        # functional PASS + AEH assurance BLOCKED -> assurance false completion
+        assurance = outcome.assurance_outcome("G3", True, False, "BLOCKED_CHANGE_STATE")
+        self.assertEqual(assurance, "BLOCKED")
+        self.assertTrue(outcome.assurance_false_completion("COMPLETED", True, assurance))
+        self.assertFalse(outcome.functional_false_completion("COMPLETED", True))
+
+    def test_assurance_branches(self):
+        self.assertEqual(outcome.assurance_outcome("G0", True, False, None), "NOT_APPLICABLE")
+        self.assertEqual(outcome.assurance_outcome("G3", False, False, None), "NOT_EXECUTED")
+        self.assertEqual(outcome.assurance_outcome("G3", True, False, None), "NOT_EXECUTED")
+        self.assertEqual(outcome.assurance_outcome("G3", True, False, "MERGE_READY"), "MERGE_READY")
+        self.assertEqual(outcome.assurance_outcome("G3", True, False, "WEIRD"), "INVALID_EVIDENCE")
 
 
 class TestAehExec(unittest.TestCase):
@@ -83,14 +97,14 @@ class TestAehExec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             work = self._make_tree(tmp, True)
             result = aeh_exec.check_aeh_evidence(work, "ran aeh doctor and aeh change new")
-            self.assertTrue(result["ok"], result)
-            self.assertTrue(result["checks"]["aeh_cli_invoked_by_agent"])
+            self.assertTrue(result["artifacts_present"], result)
+            self.assertTrue(result["aeh_cli_by_agent"])
 
     def test_g3_missing_artifacts(self):
         with tempfile.TemporaryDirectory() as tmp:
             work = self._make_tree(tmp, False)
             result = aeh_exec.check_aeh_evidence(work, "no aeh here")
-            self.assertFalse(result["ok"])
+            self.assertFalse(result["artifacts_present"])
 
     def test_g3_operator_replay_counts_as_execution(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -99,9 +113,9 @@ class TestAehExec(unittest.TestCase):
             with open(replay, "w", encoding="utf-8") as f:
                 f.write('{"status": "BLOCKED_CHANGE_STATE", "change_id": "CHG-2026-0001"}')
             result = aeh_exec.check_aeh_evidence(work, "agent never called aeh", replay)
-            self.assertTrue(result["ok"], result)
-            self.assertTrue(result["checks"]["validator_replay"])
-            self.assertTrue(result["checks"]["actual_aeh_execution"])
+            self.assertTrue(result["artifacts_present"], result)
+            self.assertTrue(result["validator_replay"]["executed"])
+            self.assertEqual(result["validator_replay"]["verdict"], "BLOCKED_CHANGE_STATE")
 
 
 class TestSufficiency(unittest.TestCase):

@@ -1,5 +1,16 @@
-"""G3 evidence check: AEH must actually execute, not merely be mentioned."""
+"""G3 AEH evidence facts (v1.6, AMENDMENT-006).
+
+This checker reports three machine facts and never draws the assurance
+conclusion itself:
+
+  - artifacts_present: .aeh/manifest.yaml + change.yaml + workflow artifacts
+  - aeh_cli_by_agent: whether the executing agent invoked the `aeh` CLI
+  - validator_replay: operator replay of the real AEH validator + its verdict
+"""
+import json
 import os
+
+import yaml
 
 REQUIRED_AEH_FILES = [
     (".aeh", "manifest.yaml"),
@@ -29,20 +40,31 @@ def _glob_exists(root, pattern):
     return found
 
 
-def check_aeh_evidence(work_dir, session_log=None, replay_file=None):
-    """Check that a G3 worktree contains real AEH machine artifacts and that
-    the AEH CLI actually executed (AMENDMENT-005):
+def _replay_verdict(replay_file):
+    """Extract the AEH validator verdict from a replay log."""
+    if not replay_file or not os.path.isfile(replay_file):
+        return None
+    with open(replay_file, "r", encoding="utf-8", errors="ignore") as f:
+        text = f.read()
+    try:
+        data = yaml.safe_load(text)
+        if isinstance(data, dict) and data.get("status"):
+            return str(data["status"])
+    except Exception:
+        pass
+    for marker in ("BLOCKED_CHANGE_STATE", "BLOCKED_RUNTIME_INTEGRITY", "MERGE_READY",
+                   "READY_WITH_WARNINGS"):
+        if marker in text:
+            return marker
+    return "UNKNOWN"
 
-    - either the executing agent invoked `aeh` commands (session log), or
-    - the operator replayed the AEH validators afterwards and recorded the
-      verdict (replay file). AEH enforcement is demonstrated by the replay
-      verdict regardless of agent compliance.
-    """
-    checks = {}
-    for prefix, suffix in REQUIRED_AEH_FILES:
-        checks["aeh_manifest"] = os.path.isfile(os.path.join(work_dir, prefix, suffix))
+
+def check_aeh_evidence(work_dir, session_log=None, replay_file=None):
+    """Return {"artifacts_present", "aeh_cli_by_agent", "validator_replay", "artifacts"}."""
+    artifacts_present = all(
+        os.path.isfile(os.path.join(work_dir, prefix, suffix))
+        for prefix, suffix in REQUIRED_AEH_FILES)
     change_files = _glob_exists(work_dir, REQUIRED_CHANGE_FILES[0])
-    checks["change_yaml"] = bool(change_files)
     artifacts = []
     for cf in change_files:
         base = os.path.dirname(cf)
@@ -50,32 +72,21 @@ def check_aeh_evidence(work_dir, session_log=None, replay_file=None):
             p = os.path.join(base, art)
             if os.path.isfile(p):
                 artifacts.append(os.path.relpath(p, work_dir))
-    checks["workflow_artifacts"] = bool(artifacts)
+    artifacts_present = artifacts_present and bool(change_files) and bool(artifacts)
 
-    def _log_text(src):
-        if src is None:
-            return ""
-        if isinstance(src, str):
-            return src
-        with open(src, "r", encoding="utf-8", errors="ignore") as f:
-            return f.read()
+    if isinstance(session_log, str):
+        session_text = session_log
+    elif session_log and os.path.isfile(session_log):
+        with open(session_log, "r", encoding="utf-8", errors="ignore") as f:
+            session_text = f.read()
+    else:
+        session_text = ""
+    cli_by_agent = ("aeh " in session_text or "aeh." in session_text or "aeh\n" in session_text)
 
-    session_text = _log_text(session_log)
-    checks["aeh_cli_invoked_by_agent"] = ("aeh " in session_text
-                                          or "aeh." in session_text
-                                          or "aeh\n" in session_text)
-    replay_text = ""
-    if replay_file and os.path.isfile(replay_file):
-        with open(replay_file, "r", encoding="utf-8", errors="ignore") as f:
-            replay_text = f.read()
-    checks["validator_replay"] = bool(
-        replay_file and os.path.isfile(replay_file)
-        and (("BLOCKED_CHANGE_STATE" in replay_text)
-             or ("aeh" in replay_text and "overall" in replay_text)))
-    checks["actual_aeh_execution"] = (checks["aeh_cli_invoked_by_agent"]
-                                      or checks["validator_replay"])
-    ok = (checks["aeh_manifest"] and checks["change_yaml"]
-          and checks["workflow_artifacts"] and checks["actual_aeh_execution"])
-    return {"ok": ok, "checks": checks,
-            "detail": "AEH_EVIDENCE_OK" if ok else "AEH_EVIDENCE_MISSING",
-            "artifacts": artifacts}
+    return {
+        "artifacts_present": artifacts_present,
+        "aeh_cli_by_agent": cli_by_agent,
+        "validator_replay": {"executed": bool(replay_file and os.path.isfile(replay_file)),
+                             "verdict": _replay_verdict(replay_file)},
+        "artifacts": artifacts,
+    }

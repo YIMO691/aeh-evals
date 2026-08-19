@@ -1,0 +1,6 @@
+changed_files:
+  - path: "src/main.py"
+    before_hash: "5b97c84c8d627b85500141e88e8adea535735cfa27573d7e6444b426f87e9a93"
+    after_hash: "TO_BE_FILLED_AFTER_HASH"
+allowed_paths:
+  - "src/main.py"

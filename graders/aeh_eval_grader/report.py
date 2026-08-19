@@ -35,7 +35,10 @@ def evidence_matrix(runs=None):
             continue
         task = run.get("task_id")
         group = run.get("group")
-        outcome = run.get("result", {}).get("outcome", "UNKNOWN")
+        result = run.get("result", {})
+        outcome = result.get("task_outcome", result.get("outcome", "UNKNOWN"))
+        if result.get("assurance_outcome") == "BLOCKED":
+            outcome = outcome + "/ASSURANCE_BLOCKED"
         table.setdefault(task, {})[group] = outcome
     out = io.StringIO()
     writer = csv.DictWriter(out, fieldnames=MATRIX_COLUMNS)

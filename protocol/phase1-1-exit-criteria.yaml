@@ -1,0 +1,42 @@
+phase: PHASE_1_1_G3_TREATMENT_FREEZE
+protocol_version: 1.6
+
+g3_treatment:
+  definition: external_aeh_assurance_runner
+  route: B
+  codex_owns_gates: false
+
+result_model:
+  agent_claimed: frozen
+  task_outcome: frozen
+  assurance_outcome: frozen
+  false_completion_split: frozen
+  integrity_direct_machine_truth_mutation: frozen
+
+aeh_evidence_checker:
+  artifact_present: required
+  cli_by_agent: recorded_not_gating
+  validator_replay_verdict: gating_for_assurance
+
+sandbox:
+  decision: workspace-write
+  boundary_note: "Codex sandbox helper repaired from official rust-v0.147.0 release package (codex-resources/codex-windows-sandbox-setup.exe); verified trivial shell command exit=0, helper_error_hits=0"
+
+freeze:
+  amendments_after_freeze: 0
+
+replay:
+  expected: 4
+  completed: 4
+  valid: 4
+  freeze_pairs_identical: 6
+  g3_assurance_matches_aeh_verdict: true
+
+verdict:
+  PHASE_1_1_FROZEN_AND_REPLAYED
+
+phase2_72_run:
+  authorized: false
+
+next:
+  STOP

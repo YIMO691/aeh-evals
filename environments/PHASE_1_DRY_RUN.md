@@ -23,7 +23,7 @@
 | 3 | Hidden tests 真的 hidden | `python -m graders.cli secrecy --run-dir runs/RUN-D00X` → 必须 `SECRECY_OK` |
 | 4 | Grader 独立判错（false completion） | `python -m graders.cli outcome --agent-claimed <转录> --hidden-pass <true/false> --visible-pass <...> --scope-ok <...>` |
 | 5 | 时间/Token/Tool-call 采集 | run.yaml.metrics 三字段齐全；tokens 拿不到必须 `UNKNOWN`/`NOT_AVAILABLE`，禁止估算 |
-| 6 | G3 真的运行了 AEH | `python -m graders.cli aeh-evidence --workdir runs/RUN-D004/work --session-log runs/RUN-D004/evidence/session.log --replay runs/RUN-D004/evidence/aeh-replay-verify.txt`（AMENDMENT-005：Agent 调用 aeh CLI **或** operator 用真实 AEH 验证器回放并记录裁决） |
+| 6 | G3 真的运行了 AEH | `python -m graders.cli aeh-evidence --workdir runs/RUN-D004/work --session-log runs/RUN-D004/evidence/session.log --replay runs/RUN-D004/evidence/aeh-replay-verify.txt`（v1.6：三态事实；G3=External Runner，`aeh-controller-*` 全量留证） |
 | 7 | INVALID_RUN 可用 | `restore-verify`（wrong SHA / dirty）+ `validate`（缺字段）→ 必须 `INVALID_RUN` |
 | 8 | Run artifact 自足 | `python -m graders.cli sufficiency --run-dir runs/RUN-D00X` → 必须 `SELF_SUFFICIENT` |
 
@@ -34,9 +34,10 @@
    - G0：什么都不加（bare）。
    - G1/G2/G3：复制 `environments/G1-assets/{AGENTS.md,context/}` 进 workdir（冻结资产）。
    - G2：在 G1 基础上按 OpenSpec 流程初始化。
-   - G3：在 G1 基础上用冻结 AEH 源 `aeh bootstrap .`，`aeh doctor .` 必须 READY/READY_WITH_WARNINGS；
-     执行后 operator 必须用真实 AEH 验证器回放：`aeh change verify <id>` + `aeh doctor .`，
-     原始输出落 `evidence/aeh-replay-*.txt`（AMENDMENT-005）。
+   - G3（v1.6 路线 B）：Eval Controller 用 `g3_runner.py` 驱动
+     bootstrap→doctor→change new→ground→spec→test-design→red(VALID_RED)→
+     **Codex 只做 coding task**→green→verify；`aeh change verify` 输出即 validator replay；
+     Codex 不得运行 aeh 命令或编辑 `.aeh` 机器真值。
 3. **run.yaml**：填 group/repository/agent/harness/environment/input（prompt sha256 实算），
    `result.agent_claimed=NOT_RECORDED`（跑完再转录），校验 `VALID`。
 4. **执行**：`codex exec "<TASK-004 original_prompt>"`，cwd=workdir，后台执行，
@@ -50,9 +51,9 @@
 ## 4. 环境冻结（本阶段）
 
 - Agent：`codex-cli 0.147.0`（本机实测版本）；model 以 CLI 默认值写入 run.yaml（若不可查则 `UNKNOWN`）。
-- Sandbox：本机 Codex `workspace-write` 沙箱缺 helper（`codex-windows-sandbox-setup.exe`），
-  Owner 授权四组统一 `--dangerously-bypass-approvals-and-sandbox`，run.yaml 记录
-  `environment.sandbox: bypass`；四组同值，组间隔离成立（环境差异已如实记录）。
+- Sandbox：v1.6 阶段已从官方 rust-v0.147.0 发布包修复 `codex-windows-sandbox-setup.exe`，
+  最终 4-run 统一 `--sandbox workspace-write`（evidence 04-sandbox-decision.txt：
+  验证命令 exit=0、helper_error_hits=0）；run.yaml 记录 `environment.sandbox: workspace-write`。
 - `input.config_sha256`：本组环境配置哈希（组内一致即可）；**不参与跨组冻结比对**（AMENDMENT-002，协议 v1.2）。
 - repository.commit_sha：`tasks/TASK-004/task.yaml` 冻结值（3374f3…）。
 - prompt：`tasks/TASK-004/task.yaml` 的 `request.original_prompt`，UTF-8 无尾换行 sha256。

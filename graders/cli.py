@@ -1,4 +1,4 @@
-"""Command-line entry points for the deterministic graders."""
+"""Command-line entry points for the deterministic graders (v1.6)."""
 import argparse
 import os
 import sys
@@ -10,7 +10,7 @@ from .aeh_eval_grader import attack as attack_mod
 from .aeh_eval_grader import diff as diff_mod
 from .aeh_eval_grader import manifest as manifest_mod
 from .aeh_eval_grader import outcome as outcome_mod
-from .aeh_eval_grader import phase1 as phase1_mod
+from .aeh_eval_grader import phase1_1 as phase1_1_mod
 from .aeh_eval_grader import report as report_mod
 from .aeh_eval_grader import restore as restore_mod
 from .aeh_eval_grader import secrecy as secrecy_mod
@@ -22,25 +22,25 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     v = sub.add_parser("validate", help="validate a run.yaml against the frozen schema")
-    v.add_argument("--run", required=True, help="path to run.yaml")
+    v.add_argument("--run", required=True)
 
     d = sub.add_parser("diff", help="check changed paths against a task allowed_scope")
-    d.add_argument("--changed", required=True, help="comma separated changed paths")
-    d.add_argument("--scope-file", required=True, help="path to task.yaml")
+    d.add_argument("--changed", required=True)
+    d.add_argument("--scope-file", required=True)
 
     a = sub.add_parser("attack", help="map observed signals to an attack verdict")
     a.add_argument("--attack", required=True, choices=attack_mod.ATTACK_IDS)
-    a.add_argument("--signals", default="", help="comma separated observed signals")
-    a.add_argument("--group", default="G3", help="run group G0-G4")
+    a.add_argument("--signals", default="")
+    a.add_argument("--group", default="G3")
 
     m = sub.add_parser("matrix", help="aggregate runs/ into the evidence matrix CSV")
-    m.add_argument("--out", default=None, help="optional output file")
+    m.add_argument("--out", default=None)
 
     rc = sub.add_parser("restore-check", help="restore task bundle and verify frozen SHA")
-    rc.add_argument("--task", required=True, help="task directory")
-    rc.add_argument("--workdir", required=True, help="empty target workdir")
+    rc.add_argument("--task", required=True)
+    rc.add_argument("--workdir", required=True)
 
-    rv = sub.add_parser("restore-verify", help="verify an existing workdir SHA/clean state")
+    rv = sub.add_parser("restore-verify", help="verify workdir SHA/clean state")
     rv.add_argument("--workdir", required=True)
     rv.add_argument("--sha", required=True)
 
@@ -48,23 +48,32 @@ def main(argv=None):
     fc.add_argument("--run-a", required=True)
     fc.add_argument("--run-b", required=True)
 
-    sc = sub.add_parser("secrecy", help="scan a run directory for hidden-test leakage")
+    sc = sub.add_parser("secrecy", help="scan run dir for hidden-test leakage")
     sc.add_argument("--run-dir", required=True)
 
-    oc = sub.add_parser("outcome", help="compute false_completion and deterministic outcome")
-    oc.add_argument("--agent-claimed", required=True,
+    to = sub.add_parser("task-outcome", help="functional task_outcome + functional false completion")
+    to.add_argument("--agent-claimed", required=True,
                     choices=["COMPLETED", "INCOMPLETE", "UNKNOWN", "NOT_RECORDED"])
-    oc.add_argument("--hidden-pass", required=True, choices=["true", "false"])
-    oc.add_argument("--visible-pass", default="true", choices=["true", "false"])
-    oc.add_argument("--scope-ok", default="true", choices=["true", "false"])
+    to.add_argument("--hidden-pass", required=True, choices=["true", "false"])
+    to.add_argument("--visible-pass", default="true", choices=["true", "false"])
+    to.add_argument("--scope-ok", default="true", choices=["true", "false"])
 
-    ae = sub.add_parser("aeh-evidence", help="check G3 worktree for real AEH artifacts")
+    ao = sub.add_parser("assurance", help="assurance_outcome + assurance false completion")
+    ao.add_argument("--group", required=True, choices=["G0", "G1", "G2", "G3", "G4"])
+    ao.add_argument("--artifacts", required=True, choices=["true", "false"])
+    ao.add_argument("--cli", required=True, choices=["true", "false"])
+    ao.add_argument("--replay-verdict", default=None)
+    ao.add_argument("--agent-claimed", default="NOT_RECORDED",
+                    choices=["COMPLETED", "INCOMPLETE", "UNKNOWN", "NOT_RECORDED"])
+    ao.add_argument("--task-pass", default="true", choices=["true", "false"])
+
+    ae = sub.add_parser("aeh-evidence", help="report AEH evidence facts for a G3 worktree")
     ae.add_argument("--workdir", required=True)
     ae.add_argument("--session-log", default=None)
-    ae.add_argument("--replay", default=None, help="operator AEH validator replay log")
+    ae.add_argument("--replay", default=None)
 
-    pv = sub.add_parser("phase1-verdict", help="compute PHASE_1_DRY_RUN verdict")
-    pv.add_argument("--out", required=True, help="output verdict yaml path")
+    p1 = sub.add_parser("phase1-1-verdict", help="compute PHASE_1_1 verdict")
+    p1.add_argument("--out", required=True)
 
     sf = sub.add_parser("sufficiency", help="check run bundle required files")
     sf.add_argument("--run-dir", required=True)
@@ -148,25 +157,37 @@ def main(argv=None):
         print("SECRECY_OK")
         return 0
 
-    if args.cmd == "outcome":
+    if args.cmd == "task-outcome":
         hidden = args.hidden_pass == "true"
         visible = args.visible_pass == "true"
         scope = args.scope_ok == "true"
-        print("false_completion=" + str(outcome_mod.false_completion(args.agent_claimed, hidden)).lower())
-        print("outcome=" + outcome_mod.outcome(args.agent_claimed, hidden, scope, visible))
+        print("functional_false_completion="
+              + str(outcome_mod.functional_false_completion(args.agent_claimed, hidden)).lower())
+        print("task_outcome=" + outcome_mod.task_outcome(hidden, visible, scope))
+        return 0
+
+    if args.cmd == "assurance":
+        artifacts = args.artifacts == "true"
+        cli = args.cli == "true"
+        assurance = outcome_mod.assurance_outcome(args.group, artifacts, cli, args.replay_verdict)
+        task_pass = args.task_pass == "true"
+        print("assurance_outcome=" + assurance)
+        print("assurance_false_completion="
+              + str(outcome_mod.assurance_false_completion(args.agent_claimed, task_pass, assurance)).lower())
         return 0
 
     if args.cmd == "aeh-evidence":
         result = aeh_exec_mod.check_aeh_evidence(args.workdir, args.session_log, args.replay)
-        print(result["detail"])
-        for key, value in result["checks"].items():
-            print("  %s=%s" % (key, value))
+        print("artifacts_present=" + str(result["artifacts_present"]).lower())
+        print("aeh_cli_by_agent=" + str(result["aeh_cli_by_agent"]).lower())
+        print("validator_replay_executed=" + str(result["validator_replay"]["executed"]).lower())
+        print("validator_replay_verdict=" + str(result["validator_replay"]["verdict"]))
         for art in result["artifacts"]:
             print("  artifact: " + art)
-        return 0 if result["ok"] else 1
+        return 0
 
-    if args.cmd == "phase1-verdict":
-        result = phase1_mod.compute()
+    if args.cmd == "phase1-1-verdict":
+        result = phase1_1_mod.compute()
         with open(args.out, "w", encoding="utf-8") as f:
             yaml.safe_dump(result, f, sort_keys=True, allow_unicode=True)
         print("VERDICT=" + result["verdict"])

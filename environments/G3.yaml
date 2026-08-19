@@ -1,20 +1,23 @@
 group: G3
-purpose: "G1/G2 + AEH：独立验证究竟新增了什么"
+purpose: "G1/G2 + AEH External Assurance Runner（路线 B，v1.6）：Codex 只做 coding task，Gate 由 Eval Controller 通过 AEH CLI 驱动"
 components:
   - name: AGENTS/CLAUDE.md
-    note: "与 G1 完全相同（AEH bootstrap 会在其 managed section 之外保留原文）"
+    note: "与 G1 完全相同（bootstrap 在其 managed section 之外保留原文）"
   - name: Project Skill
     note: "与 G1 完全相同"
-  - name: AEH
-    note: "从 https://github.com/YIMO691/aeh 检出固定 commit，可编辑安装"
+  - name: AEH External Runner
+    note: "Eval Controller 执行全部 AEH CLI；Codex 在 RED 之后只执行 coding task，不拥有 Gate"
 install_commands:
-  - "USER_RUNTIME: git clone https://github.com/YIMO691/aeh && cd adaptive-engineering-harness && python -m venv .venv && .venv/Scripts/activate (POSIX: source .venv/bin/activate) && pip install -e ."
-  - "USER_RUNTIME: cd <任务仓库副本> && aeh bootstrap . （record harness.aeh_version）"
-  - "USER_RUNTIME: aeh doctor . 必须 READY / READY_WITH_WARNINGS 后才开始任务"
+  - "USER_RUNTIME: AEH 从 https://github.com/YIMO691/aeh 固定 commit 可编辑安装（本机 .venv-aeh）"
+  - "USER_RUNTIME: python -m graders.aeh_eval_grader.g3_runner --workdir <dir> --aeh <aeh.exe> --codex <codex.exe> --title <title> --reqs tasks/TASK-004/aeh-inputs/reqs.yaml --plan tasks/TASK-004/aeh-inputs/plan.yaml --scope-template tasks/TASK-004/aeh-inputs/scope.yaml --test-src tasks/TASK-004/aeh-inputs/test-src --prompt-file <prompt.txt> --evidence-dir runs/RUN-D004/evidence [--codex-extra <flags>]"
+runner_sequence:
+  - "bootstrap -> doctor -> change new -> ground -> spec -> test-design -> red(VALID_RED)"
+  - "Codex coding task only"
+  - "green --scope(动态哈希) -> verify"
+  - "每步输出落 evidence/aeh-controller-*.txt；verify 输出即 validator replay 证据"
 forbidden:
-  - "修改 .aeh/runtime/core 或 schemas"
-  - "手写 approvals.yaml"
-  - "绕过 aeh CLI 直接改机器真值文件"
+  - "Codex 运行任何 aeh 命令或编辑 .aeh 机器真值"
+  - "Controller 跳过任一 AEH 步骤"
 frozen_fields: [repository.commit_sha, agent.vendor, agent.product, agent.version, agent.model,
   harness.aeh_version, harness.openspec_version, harness.skill_revision, environment.os,
   environment.python_or_dotnet, environment.sandbox, environment.network, environment.timeout,

@@ -1,0 +1,17 @@
+tests:
+  - id: TEST-001
+    verifies:
+      - AC-001-01
+      - AC-002-01
+    kind: contract
+    intent: "验证 run() 把配置文件的 limit 传递给 top_items()，并保持默认 limit 行为"
+    command: "python -m unittest tests.test_main_limit -v"
+    targets:
+      - "src/main.py"
+    required: true
+    expected_before_fix:
+      type: behavior_failure
+      signature: "AssertionError: Lists differ: [1, 2, 3] != [1, 2]"
+test_files:
+  - src: "test_main_limit.py"
+    dest: "tests/test_main_limit.py"

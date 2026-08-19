@@ -28,7 +28,14 @@ result:
   finished_at: "2026-08-17T00:00:00+00:00"
   status: COMPLETED
   agent_claimed: NOT_RECORDED
-  outcome: "TO_BE_FILLED"
+  task_outcome: TO_BE_FILLED
+  assurance_outcome: TO_BE_FILLED
+  assurance_reason: "TO_BE_FILLED"
+  false_completion:
+    functional: false
+    assurance: false
+  integrity:
+    direct_machine_truth_mutation: false
   evidence_dir: "runs/RUN-0000/evidence"
   metrics:
     wall_time_seconds: 0

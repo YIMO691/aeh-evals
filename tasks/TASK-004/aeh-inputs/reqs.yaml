@@ -1,0 +1,9 @@
+requirements:
+  - behavior: "run() 在提供 config_path 时必须使用配置中的 limit 值裁剪记录列表"
+    acceptance:
+      - type: automated
+        statement: "config 文件含 limit=2 时，run([1,2,3], config_path) 返回 [1,2]"
+  - behavior: "未提供 config_path 时保持默认 limit=10 的行为"
+    acceptance:
+      - type: automated
+        statement: "run([1,2,3]) 在默认 limit 下返回全部输入记录"

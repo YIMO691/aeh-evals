@@ -83,3 +83,27 @@
 - **影响面**：`graders/aeh_eval_grader/aeh_exec.py`、`graders/cli.py`（--replay）、
   相关单测、`environments/PHASE_1_DRY_RUN.md` G3 步骤。
 - **版本**：v1.4 → **v1.5**。
+
+## AMENDMENT-006（PHASE_1_1 G3 treatment freeze，2026-08-18）
+
+- **问题**：v1.5 只有单一 `outcome`，RUN-D004 出现「代码功能 PASS + Agent 自报 COMPLETED
+  + 真实 AEH 验证 BLOCKED」却记录 `outcome: PASS` 的语义冲突；`AEH_EVIDENCE_OK` 只判工件存在，
+  无法区分「真跑了 AEH」与「被告诉遵守 AEH」。
+- **变更**：
+  1. `result.outcome` 移除，拆为 `task_outcome`（功能正确性）与 `assurance_outcome`
+     （AEH 可信工程证据：MERGE_READY/READY_WITH_WARNINGS/BLOCKED/NOT_EXECUTED/
+     INVALID_EVIDENCE/NOT_APPLICABLE）；新增 `assurance_reason`。
+  2. `false_completion` 拆 `functional` / `assurance`；新增指标 `assurance_false_completion`
+     （Agent=COMPLETED 且 functional PASS 且 assurance=BLOCKED）。
+  3. `integrity.direct_machine_truth_mutation` 必填：Agent 直接写 `.aeh` 机器真值必须显式记录。
+  4. AEH evidence checker 只输出三态事实（ARTIFACT_PRESENT / AEH_CLI_BY_AGENT /
+     AEH_VALIDATOR_REPLAY(verdict)），不再输出笼统 `AEH_EVIDENCE_OK`。
+  5. **G3 treatment 冻结为路线 B（External AEH Assurance Runner）**：Eval Controller 执行
+     AEH CLI（bootstrap/doctor/change new/ground/spec/test-design/red → Codex 只做 coding →
+     green/verify）；Codex 不拥有 Gate。
+  6. sandbox 决策在本阶段 T4 冻结（workspace-write 或 bypass+边界声明）。
+- **理由**：区分「代码做对了」与「这次工程 Change 可以被信任」；G3 新增变量只应是
+  Independent AEH Assurance，而不是 Agent 学习整套 AEH CLI。
+- **影响面**：run-manifest schema、examples、RUN 模板、metrics、outcome/aeh_exec/report/
+  phase1 grader、environments G3、PHASE_1_DRY_RUN、phase1-1-exit-criteria。
+- **版本**：v1.5 → **v1.6**。v1.6 冻结后禁止再 Amendment（问题 → STOP 报告）。

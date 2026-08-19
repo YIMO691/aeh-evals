@@ -62,13 +62,33 @@
     },
     "result": {
       "type": "object",
-      "required": ["started_at", "finished_at", "agent_claimed", "outcome"],
+      "required": ["started_at", "finished_at", "agent_claimed", "task_outcome",
+                   "assurance_outcome", "false_completion", "integrity"],
       "properties": {
         "started_at": {"type": "string", "format": "date-time"},
         "finished_at": {"type": "string", "format": "date-time"},
         "status": {"type": "string", "enum": ["COMPLETED", "ABORTED", "INVALID_RUN", "USER_RUNTIME"]},
         "agent_claimed": {"type": "string", "enum": ["COMPLETED", "INCOMPLETE", "UNKNOWN", "NOT_RECORDED"]},
-        "outcome": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "INVALID_RUN", "ABORTED", "USER_RUNTIME", "TO_BE_FILLED"]},
+        "task_outcome": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "ABORTED", "USER_RUNTIME", "TO_BE_FILLED"]},
+        "assurance_outcome": {"type": "string", "enum": ["MERGE_READY", "READY_WITH_WARNINGS", "BLOCKED", "NOT_EXECUTED", "INVALID_EVIDENCE", "NOT_APPLICABLE", "TO_BE_FILLED"]},
+        "assurance_reason": {"type": "string"},
+        "false_completion": {
+          "type": "object",
+          "required": ["functional", "assurance"],
+          "properties": {
+            "functional": {"type": "boolean"},
+            "assurance": {"type": "boolean"}
+          },
+          "additionalProperties": true
+        },
+        "integrity": {
+          "type": "object",
+          "required": ["direct_machine_truth_mutation"],
+          "properties": {
+            "direct_machine_truth_mutation": {"type": "boolean"}
+          },
+          "additionalProperties": true
+        },
         "evidence_dir": {"type": "string"},
         "metrics": {"type": "object"}
       },
