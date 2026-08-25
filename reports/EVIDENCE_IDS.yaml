@@ -1,0 +1,37 @@
+schema_version: 1
+identity_policy:
+  phase1_v1_5_prefix: EVAL-P1
+  phase1_1_v1_6_prefix: EVAL-P11
+  rule: Same local RUN-Dxxx label across phases does not imply the same run.
+phase1_1:
+  protocol: v1.6
+  evidence_manifest: reports/phase1-1-evidence-manifest.sha256
+  sources:
+  - id: EVAL-P11-VERDICT-3267E8A
+    kind: machine_verdict
+    path: reports/phase1-1-verdict.yaml
+  - id: EVAL-P11-RESULT-20260819
+    kind: narrative_report
+    path: reports/PHASE_1_1_RESULT.md
+  - id: EVAL-P11-CLOSURE-20260819
+    kind: closure_record
+    path: reports/PHASE_1_1_CLOSURE.md
+  - id: EVAL-P11-D001
+    kind: internal_raw_run
+    run_id: RUN-D001
+    group: G0
+  - id: EVAL-P11-D002
+    kind: internal_raw_run
+    run_id: RUN-D002
+    group: G1
+  - id: EVAL-P11-D003
+    kind: internal_raw_run
+    run_id: RUN-D003
+    group: G2
+  - id: EVAL-P11-D004
+    kind: internal_raw_run
+    run_id: RUN-D004
+    group: G3
+boundaries:
+  product_efficacy: NOT_YET_PROVEN
+  phase2_72_run_authorized: false

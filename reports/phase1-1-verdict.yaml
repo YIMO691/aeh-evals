@@ -8,7 +8,7 @@ g3:
   artifacts_present: true
   g3_assurance_matches_aeh_verdict: true
   treatment: external_aeh_assurance_runner (route B)
-  validator_replay_verdict: VERIFY_COMPLETE
+  validator_replay_verdict: MERGE_READY
 group_isolation:
   freeze_pairs_identical: 6
   pairs:

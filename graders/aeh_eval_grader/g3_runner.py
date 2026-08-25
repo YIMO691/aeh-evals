@@ -26,8 +26,20 @@ def _log(evidence_dir, name, text):
     return text
 
 
-def _run_aeh(aeh, args, workdir, evidence_dir, step_name):
-    cmd = [aeh] + args + ["--workdir", workdir]
+def _build_aeh_command(aeh, args, workdir, add_workdir_option=True):
+    """Build an AEH command without changing positional target semantics.
+
+    ``bootstrap`` and ``doctor`` receive their target as a positional argument.
+    Change subcommands receive the target through ``--workdir``.
+    """
+    cmd = [aeh] + list(args)
+    if add_workdir_option:
+        cmd += ["--workdir", workdir]
+    return cmd
+
+
+def _run_aeh(aeh, args, workdir, evidence_dir, step_name, add_workdir_option=True):
+    cmd = _build_aeh_command(aeh, args, workdir, add_workdir_option)
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
     out = (proc.stdout or "") + (proc.stderr or "")
     _log(evidence_dir, "aeh-controller-%s.txt" % step_name, out)
@@ -84,14 +96,16 @@ def main(argv=None):
 
     # 1. bootstrap
     code, status, out = _run_aeh(args.aeh, ["bootstrap", workdir], workdir,
-                                 args.evidence_dir, "01-bootstrap")
+                                 args.evidence_dir, "01-bootstrap",
+                                 add_workdir_option=False)
     steps.append(("bootstrap", code, status))
     if code != 0 or status != "BOOTSTRAP_COMPLETE":
         return stop("bootstrap code=%s status=%s" % (code, status))
 
     # 2. doctor (pre)
     code, status, out = _run_aeh(args.aeh, ["doctor", workdir], workdir,
-                                 args.evidence_dir, "02-doctor-pre")
+                                 args.evidence_dir, "02-doctor-pre",
+                                 add_workdir_option=False)
     steps.append(("doctor_pre", code, status))
     if status not in ("READY", "READY_WITH_WARNINGS"):
         return stop("doctor_pre status=%s" % status)

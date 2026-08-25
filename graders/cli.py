@@ -181,6 +181,8 @@ def main(argv=None):
         print("artifacts_present=" + str(result["artifacts_present"]).lower())
         print("aeh_cli_by_agent=" + str(result["aeh_cli_by_agent"]).lower())
         print("validator_replay_executed=" + str(result["validator_replay"]["executed"]).lower())
+        print("validator_replay_status=" + str(result["validator_replay"]["status"]))
+        print("validator_replay_overall=" + str(result["validator_replay"]["overall"]))
         print("validator_replay_verdict=" + str(result["validator_replay"]["verdict"]))
         for art in result["artifacts"]:
             print("  artifact: " + art)
