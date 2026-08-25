@@ -6,9 +6,10 @@ from aeh_eval_grader import phase2_v19_readiness as readiness
 
 
 class TestPhase2V19Readiness(unittest.TestCase):
-    def test_repository_package_passes(self):
+    def test_repository_package_detects_shared_input_drift_after_v110(self):
         result = readiness.compute()
-        self.assertEqual(result["verdict"], "PHASE_2_V1_9_READINESS_PASS", result["errors"])
+        self.assertEqual(result["verdict"], "PHASE_2_V1_9_READINESS_FAIL")
+        self.assertTrue(any("g3_runner.py" in error for error in result["errors"]))
         self.assertEqual(result["planned_runs"], 72)
         self.assertFalse(result["phase2_authorized"])
 
@@ -32,11 +33,10 @@ class TestPhase2V19Readiness(unittest.TestCase):
         del argv[config_index:config_index + 2]
         self.assertTrue(readiness.validate_baseline(baseline))
 
-    def test_manifest_is_canonical(self):
-        path = os.path.join(readiness.repo_root(), "protocol", "phase2-v1.9", "INPUTS.sha256")
-        with open(path, "r", encoding="utf-8") as stream:
-            committed = stream.read().replace("\r\n", "\n")
-        self.assertEqual(committed, readiness.render_input_manifest())
+    def test_historical_manifest_digest_remains_immutable(self):
+        baseline = readiness.v18.v17._load("protocol/phase2-v1.9/BASELINE.yaml")
+        path = os.path.join(readiness.repo_root(), *baseline["input_manifest"]["path"].split("/"))
+        self.assertEqual(readiness.v18.v17._sha256_file(path), baseline["input_manifest"]["sha256"])
 
     def test_correction_basis_is_pinned(self):
         baseline = readiness.v18.v17._load("protocol/phase2-v1.9/BASELINE.yaml")

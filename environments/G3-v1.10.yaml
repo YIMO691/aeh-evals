@@ -1,0 +1,30 @@
+group: G3
+protocol_version: "1.10"
+purpose: "G1 + AEH External Assurance Runner with explicit UTF-8 replacement-safe transcript capture"
+components:
+  - name: AGENTS/CLAUDE.md
+    note: "与 G1 完全相同；AEH managed section 由显式 answers 编译"
+  - name: Project Skill
+    note: "与 G1 完全相同"
+  - name: AEH External Runner
+    note: "Eval Controller 执行全部 AEH CLI；Codex 仅执行 RED 与 GREEN 之间的 coding task"
+  - name: Transcript Capture
+    note: "AEH 与 Codex stdout/stderr 均以 UTF-8、errors=replace 捕获"
+  - name: AEH Bootstrap Answers
+    note: "复用已验证的 environments/G3-assets/answers-v1.8.yaml"
+install_commands:
+  - "Install the exact AEH v0.2.0 wheel pinned by protocol/phase2-v1.10/BASELINE.yaml"
+  - "Invoke g3_runner.py with --answers environments/G3-assets/answers-v1.8.yaml"
+runner_sequence:
+  - "bootstrap(--answers) -> doctor -> change new -> ground -> spec -> test-design -> red(VALID_RED)"
+  - "Codex coding task only"
+  - "green --scope(trusted dynamic hashes) -> verify"
+forbidden:
+  - "Codex 运行 aeh 命令或编辑 .aeh 机器真值"
+  - "Controller 跳过任一 AEH 步骤"
+  - "依赖 Windows 当前 ANSI code page 解码捕获输出"
+  - "Codex --ignore-rules"
+frozen_fields: [repository.commit_sha, agent.vendor, agent.product, agent.version, agent.model,
+  harness.aeh_version, harness.openspec_version, harness.skill_revision, environment.os,
+  environment.python_or_dotnet, environment.sandbox, environment.network, environment.timeout,
+  input.task_prompt_sha256, input.config_sha256]

@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -134,6 +135,23 @@ class TestAehExec(unittest.TestCase):
 
 
 class TestG3RunnerCommand(unittest.TestCase):
+    def test_capture_decodes_non_ascii_utf8_independent_of_windows_code_page(self):
+        script = (
+            "import sys; "
+            "sys.stdout.buffer.write('中文输出¦'.encode('utf-8')); "
+            "sys.stderr.buffer.write('错误流'.encode('utf-8'))"
+        )
+        proc = g3_runner._run_captured([sys.executable, "-c", script], timeout=30)
+        self.assertEqual(proc.returncode, 0)
+        self.assertEqual(proc.stdout, "中文输出¦")
+        self.assertEqual(proc.stderr, "错误流")
+
+    def test_capture_replaces_invalid_utf8_without_losing_the_process_result(self):
+        script = "import sys; sys.stdout.buffer.write(b'valid\\xfftail')"
+        proc = g3_runner._run_captured([sys.executable, "-c", script], timeout=30)
+        self.assertEqual(proc.returncode, 0)
+        self.assertEqual(proc.stdout, "valid\ufffdtail")
+
     def test_bootstrap_arguments_include_absolute_answers_when_supplied(self):
         with tempfile.TemporaryDirectory() as tmp:
             answers = os.path.join(tmp, "answers.yaml")

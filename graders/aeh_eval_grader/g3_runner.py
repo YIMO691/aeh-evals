@@ -48,9 +48,21 @@ def _bootstrap_arguments(workdir, answers=None):
     return arguments
 
 
+def _run_captured(command, timeout):
+    """Capture UTF-8 CLI output without depending on the Windows ANSI code page."""
+    return subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout,
+    )
+
+
 def _run_aeh(aeh, args, workdir, evidence_dir, step_name, add_workdir_option=True):
     cmd = _build_aeh_command(aeh, args, workdir, add_workdir_option)
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    proc = _run_captured(cmd, timeout=300)
     out = (proc.stdout or "") + (proc.stderr or "")
     _log(evidence_dir, "aeh-controller-%s.txt" % step_name, out)
     status = None
@@ -240,7 +252,7 @@ def main(argv=None):
     codex_cmd = [args.codex, "exec", "-C", workdir] + list(args.codex_extra) \
         + ["-o", last_msg, prompt]
     started = time.time()
-    proc = subprocess.run(codex_cmd, capture_output=True, text=True, timeout=1800)
+    proc = _run_captured(codex_cmd, timeout=1800)
     elapsed = int(time.time() - started)
     session = (proc.stdout or "") + (proc.stderr or "")
     _log(args.evidence_dir, "session.log", session)
