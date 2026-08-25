@@ -11,6 +11,7 @@ from .aeh_eval_grader import diff as diff_mod
 from .aeh_eval_grader import manifest as manifest_mod
 from .aeh_eval_grader import outcome as outcome_mod
 from .aeh_eval_grader import phase1_1 as phase1_1_mod
+from .aeh_eval_grader import phase2_readiness as phase2_readiness_mod
 from .aeh_eval_grader import report as report_mod
 from .aeh_eval_grader import restore as restore_mod
 from .aeh_eval_grader import secrecy as secrecy_mod
@@ -74,6 +75,9 @@ def main(argv=None):
 
     p1 = sub.add_parser("phase1-1-verdict", help="compute PHASE_1_1 verdict")
     p1.add_argument("--out", required=True)
+
+    sub.add_parser("phase2-readiness", help="validate the Phase 2 v1.7 candidate package")
+    sub.add_parser("phase2-input-manifest", help="render the canonical Phase 2 input manifest")
 
     sf = sub.add_parser("sufficiency", help="check run bundle required files")
     sf.add_argument("--run-dir", required=True)
@@ -193,6 +197,20 @@ def main(argv=None):
         with open(args.out, "w", encoding="utf-8") as f:
             yaml.safe_dump(result, f, sort_keys=True, allow_unicode=True)
         print("VERDICT=" + result["verdict"])
+        return 0
+
+    if args.cmd == "phase2-readiness":
+        result = phase2_readiness_mod.compute()
+        print(result["verdict"])
+        print("planned_blocks=" + str(result["planned_blocks"]))
+        print("planned_runs=" + str(result["planned_runs"]))
+        print("phase2_authorized=" + str(result["phase2_authorized"]).lower())
+        for error in result["errors"]:
+            print("  - " + error)
+        return 0 if not result["errors"] else 1
+
+    if args.cmd == "phase2-input-manifest":
+        sys.stdout.write(phase2_readiness_mod.render_input_manifest())
         return 0
 
     if args.cmd == "sufficiency":

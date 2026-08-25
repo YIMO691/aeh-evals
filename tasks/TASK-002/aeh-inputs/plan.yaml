@@ -1,0 +1,14 @@
+tests:
+  - id: TEST-001
+    verifies: [AC-001-01, AC-002-01]
+    kind: contract
+    intent: "验证同一路径内容变化后不会返回过期缓存"
+    command: "python -m unittest tests.test_settings_refresh -v"
+    targets: ["src/settings.py"]
+    required: true
+    expected_before_fix:
+      type: behavior_failure
+      signature: "AssertionError: 'old' != 'new'"
+test_files:
+  - src: test_settings_refresh.py
+    dest: tests/test_settings_refresh.py

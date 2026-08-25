@@ -1,0 +1,9 @@
+requirements:
+  - behavior: "API 必须提供记录汇总，返回记录数和 amount 总和"
+    acceptance:
+      - type: invariant
+        statement: "两条 amount=10/20 的记录汇总为 count=2,total=30"
+  - behavior: "空 Store 的汇总必须返回零值"
+    acceptance:
+      - type: invariant
+        statement: "空 Store 返回 count=0,total=0"

@@ -1,0 +1,42 @@
+protocol_version: "1.7"
+baseline_id: AEH-PHASE2-V1.7-BASELINE-001
+status: READY_FOR_PREFLIGHT
+phase2_72_run:
+  authorized: false
+attack_runs:
+  authorized: false
+
+historical_freeze:
+  protocol_version: "1.6"
+  path: protocol/FREEZE-v1.6.md
+  sha256: 434291cc3bdbc8412b84d2678f1db21253b0c3cd7cd26649dc99b929b66fe06f
+  rewrite_allowed: false
+
+evaluator:
+  repository: https://github.com/YIMO691/aeh-evals
+  phase1_1_closure_merge_commit: 348d0975209ab12621db028c725cf9121c5cdc8c
+
+aeh_treatment:
+  repository: https://github.com/YIMO691/aeh
+  version: 0.2.0
+  tag: v0.2.0
+  commit: a914f83b852dc57be946c995f2dc4ec58ac7d208
+  release_url: https://github.com/YIMO691/aeh/releases/tag/v0.2.0
+  published_at: "2026-08-20T01:19:12Z"
+  wheel:
+    name: adaptive_engineering_harness-0.2.0-py3-none-any.whl
+    size_bytes: 121717
+    sha256: 8fc11f9b42cd90fb4e4d1b64380e429d9ad19d80cacfc76396c0b46f59b3ed19
+    url: https://github.com/YIMO691/aeh/releases/download/v0.2.0/adaptive_engineering_harness-0.2.0-py3-none-any.whl
+  execution_mode: external_aeh_assurance_runner_route_b
+
+schedule:
+  path: protocol/phase2-v1.7/SCHEDULE.yaml
+  policy: per_task_repetition_stratified_randomization
+  expected_blocks: 18
+  expected_runs: 72
+
+input_manifest:
+  path: protocol/phase2-v1.7/INPUTS.sha256
+  sha256: 385d9d5af4b6a7337f7479482a6cb466b05bb9f5911d0f082412a26254083430
+  entries: 78

@@ -1,0 +1,14 @@
+tests:
+  - id: TEST-001
+    verifies: [AC-001-01, AC-002-01]
+    kind: contract
+    intent: "验证 1-based 分页的首、中、末页切片"
+    command: "python -m unittest tests.test_pager_contract -v"
+    targets: ["src/pager.py"]
+    required: true
+    expected_before_fix:
+      type: behavior_failure
+      signature: "AssertionError: Lists differ: [3, 4, 5] != [0, 1, 2]"
+test_files:
+  - src: test_pager_contract.py
+    dest: tests/test_pager_contract.py

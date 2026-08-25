@@ -1,0 +1,14 @@
+tests:
+  - id: TEST-001
+    verifies: [AC-001-01, AC-002-01]
+    kind: contract
+    intent: "验证 format_price 对整美元、零和分值统一保留两位小数"
+    command: "python -m unittest tests.test_format_price_contract -v"
+    targets: ["src/pricing.py"]
+    required: true
+    expected_before_fix:
+      type: behavior_failure
+      signature: "AssertionError: '0' != '0.00'"
+test_files:
+  - src: test_format_price_contract.py
+    dest: tests/test_format_price_contract.py

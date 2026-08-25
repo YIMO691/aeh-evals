@@ -1,0 +1,5 @@
+changed_files:
+  - path: src/settings.py
+    before_hash: TO_BE_CAPTURED_BEFORE_CODE
+    after_hash: TO_BE_FILLED_AFTER_HASH
+allowed_paths: ["src/settings.py"]

@@ -1,0 +1,9 @@
+requirements:
+  - behavior: "同一 claim_id 只能成功领取一次，重复领取必须抛出 DuplicateClaimError"
+    acceptance:
+      - type: invariant
+        statement: "重复 CLAIM-1 不增加余额且 Ledger 仍只有一条记录"
+  - behavior: "不同 claim_id 必须可以分别领取"
+    acceptance:
+      - type: invariant
+        statement: "CLAIM-1 与 CLAIM-2 分别领取后余额和流水均正确"

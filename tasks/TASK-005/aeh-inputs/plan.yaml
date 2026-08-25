@@ -1,0 +1,14 @@
+tests:
+  - id: TEST-001
+    verifies: [AC-001-01, AC-002-01]
+    kind: contract
+    intent: "验证 get_summary 对普通记录与空 Store 的确定结果"
+    command: "python -m unittest tests.test_api_summary -v"
+    targets: ["src/api.py"]
+    required: true
+    expected_before_fix:
+      type: behavior_failure
+      signature: "ImportError: cannot import name 'get_summary'"
+test_files:
+  - src: test_api_summary.py
+    dest: tests/test_api_summary.py

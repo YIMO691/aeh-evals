@@ -1,0 +1,9 @@
+requirements:
+  - behavior: "format_price() 必须始终输出恰好两位小数，包括整美元和零"
+    acceptance:
+      - type: automated
+        statement: "0、100、1200 分分别格式化为 0.00、1.00、12.00"
+  - behavior: "非整美元金额保持正确的分值格式"
+    acceptance:
+      - type: automated
+        statement: "1 分格式化为 0.01"
