@@ -1,0 +1,43 @@
+protocol_version: "1.8"
+preflight_id: AEH-PHASE2-V1.8-PREFLIGHT-001
+date: "2026-08-25"
+evaluator_commit: 7145ba8046a725f1c4e525b28bac7eb32bb3cbcb
+evaluator_tree: 6e338aaa4d5214d7c43d03a35e90d8bf919d19b3
+scope:
+  task_id: TASK-004
+  repetition: 1
+  scheduled_groups: [G3, G1, G2, G0]
+runs:
+  expected: 4
+  codex_process_invocations: 4
+  agent_sessions_started: 0
+  model_tokens: 0
+  schema_valid: 4
+  secrecy_pass: 4
+  self_sufficient: 4
+  aborted: 4
+  outcomes:
+    RUN-P281: {group: G3, task_outcome: ABORTED, assurance_outcome: NOT_EXECUTED, codex_exit: 2}
+    RUN-P282: {group: G1, task_outcome: ABORTED, assurance_outcome: NOT_APPLICABLE, codex_exit: 2}
+    RUN-P283: {group: G2, task_outcome: ABORTED, assurance_outcome: NOT_APPLICABLE, codex_exit: 2}
+    RUN-P284: {group: G0, task_outcome: ABORTED, assurance_outcome: NOT_APPLICABLE, codex_exit: 2}
+group_isolation:
+  adjacent_freeze_comparisons_identical: 3
+blocking_findings:
+  - id: P2-PF-003
+    class: CODEX_CLI_CONTRACT
+    summary: Codex CLI 0.149.0 exec rejected --ask-for-approval before starting an Agent session in all four groups.
+validated_v18_fixes:
+  - The native workspace permission-profile smoke read and wrote successfully without a model call.
+  - AEH 0.2.0 bootstrap accepted the frozen answers and compiled the intended headless policy.
+required_before_rerun:
+  - Issue a new protocol candidate whose exact frozen argv is accepted by Codex CLI 0.149.0.
+  - Validate argv parsing with a no-model or deliberately non-benchmark command before consuming cells.
+  - Request separate Owner authorization before any additional Agent execution.
+phase2_72_run:
+  authorized: false
+attack_runs:
+  authorized: false
+value_conclusion_allowed: false
+verdict: PREFLIGHT_FAILED_CODEX_CLI_CONTRACT
+next: STOP_FOR_PROTOCOL_CORRECTION_AND_OWNER_GATE

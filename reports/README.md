@@ -15,3 +15,7 @@ Phase 1.1 的冲突消解顺序固定为：原始 run evidence → `run.yaml` �
 
 Phase 2 v1.7 的四次执行机制预检记录在 `PHASE_2_PREFLIGHT_V1_7.md` 与
 `phase2-preflight-v1.7-verdict.yaml`。该预检因环境契约失败，不产生价值结论，正式执行仍未授权。
+
+Phase 2 v1.8 的四单元预检记录在 `PHASE_2_PREFLIGHT_V1_8.md` 与
+`phase2-preflight-v1.8-verdict.yaml`。该预检因 Codex CLI 参数契约失败，不产生价值结论，
+正式 72-run 与 A01–A08 仍未授权。

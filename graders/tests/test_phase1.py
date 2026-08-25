@@ -134,6 +134,17 @@ class TestAehExec(unittest.TestCase):
 
 
 class TestG3RunnerCommand(unittest.TestCase):
+    def test_bootstrap_arguments_include_absolute_answers_when_supplied(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            answers = os.path.join(tmp, "answers.yaml")
+            observed = g3_runner._bootstrap_arguments("work", answers)
+            self.assertEqual(observed[:2], ["bootstrap", "work"])
+            self.assertEqual(observed[2], "--answers")
+            self.assertEqual(observed[3], os.path.abspath(answers))
+
+    def test_bootstrap_arguments_preserve_v17_compatibility(self):
+        self.assertEqual(g3_runner._bootstrap_arguments("work"), ["bootstrap", "work"])
+
     def test_positional_target_commands_do_not_receive_workdir_option(self):
         command = g3_runner._build_aeh_command(
             "aeh", ["bootstrap", "C:/work"], "C:/work", add_workdir_option=False)

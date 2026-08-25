@@ -1,0 +1,59 @@
+contract: bootstrap.interview.answers
+version: 1
+answers:
+  q-git-commit:
+    question_id: q-git-commit
+    answer: deny
+    type: PERMISSION
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-git-push:
+    question_id: q-git-push
+    answer: deny
+    type: PERMISSION
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-human-review:
+    question_id: q-human-review
+    answer: critical
+    type: POLICY
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-modify-source:
+    question_id: q-modify-source
+    answer: allow
+    type: PERMISSION
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-plan-before-code:
+    question_id: q-plan-before-code
+    answer: risk_based
+    type: PREFERENCE
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-shell-access:
+    question_id: q-shell-access
+    answer: allow
+    type: PERMISSION
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-team-review-policy:
+    question_id: q-team-review-policy
+    answer: major
+    type: POLICY
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-testing-policy:
+    question_id: q-testing-policy
+    answer: risk_based
+    type: POLICY
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+  q-web-access:
+    question_id: q-web-access
+    answer: deny
+    type: PERMISSION
+    source: user_answer
+    answered_at: '2026-08-25T11:19:47+08:00'
+reset: []
+

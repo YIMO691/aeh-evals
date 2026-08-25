@@ -40,6 +40,14 @@ def _build_aeh_command(aeh, args, workdir, add_workdir_option=True):
     return cmd
 
 
+def _bootstrap_arguments(workdir, answers=None):
+    """Build bootstrap arguments, preserving the v1.7 no-answers compatibility path."""
+    arguments = ["bootstrap", workdir]
+    if answers:
+        arguments += ["--answers", os.path.abspath(answers)]
+    return arguments
+
+
 def _run_aeh(aeh, args, workdir, evidence_dir, step_name, add_workdir_option=True):
     cmd = _build_aeh_command(aeh, args, workdir, add_workdir_option)
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
@@ -150,6 +158,7 @@ def main(argv=None):
     parser.add_argument("--test-src", required=True)
     parser.add_argument("--prompt-file", required=True)
     parser.add_argument("--evidence-dir", required=True)
+    parser.add_argument("--answers", default=None)
     parser.add_argument("--codex-extra", nargs="*", default=[])
     args = parser.parse_args(argv)
 
@@ -163,7 +172,7 @@ def main(argv=None):
         return 2
 
     # 1. bootstrap
-    code, status, out = _run_aeh(args.aeh, ["bootstrap", workdir], workdir,
+    code, status, out = _run_aeh(args.aeh, _bootstrap_arguments(workdir, args.answers), workdir,
                                  args.evidence_dir, "01-bootstrap",
                                  add_workdir_option=False)
     steps.append(("bootstrap", code, status))
