@@ -6,9 +6,10 @@ from aeh_eval_grader import phase2_v18_readiness as readiness
 
 
 class TestPhase2V18Readiness(unittest.TestCase):
-    def test_repository_package_passes(self):
+    def test_repository_package_detects_shared_input_drift_after_v19(self):
         result = readiness.compute()
-        self.assertEqual(result["verdict"], "PHASE_2_V1_8_READINESS_PASS", result["errors"])
+        self.assertEqual(result["verdict"], "PHASE_2_V1_8_READINESS_FAIL")
+        self.assertTrue(any("graders/cli.py" in error for error in result["errors"]))
         self.assertEqual(result["planned_runs"], 72)
         self.assertFalse(result["phase2_authorized"])
 
@@ -28,11 +29,10 @@ class TestPhase2V18Readiness(unittest.TestCase):
         observed = {key: value["answer"] for key, value in body["answers"].items()}
         self.assertEqual(observed, readiness.EXPECTED_ANSWERS)
 
-    def test_manifest_is_canonical(self):
-        path = os.path.join(readiness.repo_root(), "protocol", "phase2-v1.8", "INPUTS.sha256")
-        with open(path, "r", encoding="utf-8") as stream:
-            committed = stream.read().replace("\r\n", "\n")
-        self.assertEqual(committed, readiness.render_input_manifest())
+    def test_historical_manifest_digest_remains_immutable(self):
+        baseline = readiness.v17._load("protocol/phase2-v1.8/BASELINE.yaml")
+        path = os.path.join(readiness.repo_root(), *baseline["input_manifest"]["path"].split("/"))
+        self.assertEqual(readiness.v17._sha256_file(path), baseline["input_manifest"]["sha256"])
 
 
 if __name__ == "__main__":

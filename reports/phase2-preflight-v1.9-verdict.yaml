@@ -1,0 +1,49 @@
+protocol_version: "1.9"
+preflight_id: AEH-PHASE2-V1.9-PREFLIGHT-001
+date: "2026-08-25"
+evaluator_commit: 07de77e213ac115b648abd54f80271dd01965def
+evaluator_tree: 0f5f1970719dd540298bc3d34910b7290182e566
+scope:
+  task_id: TASK-004
+  repetition: 1
+  scheduled_groups: [G3, G1, G2, G0]
+runs:
+  expected: 4
+  codex_process_invocations: 4
+  agent_sessions_started: 4
+  schema_valid: 4
+  secrecy_pass: 4
+  self_sufficient: 4
+  scope_pass: 4
+  task_pass: 4
+  session_capture_complete: 3
+  session_capture_warning: 1
+  outcomes:
+    RUN-P291: {group: G3, task_outcome: PASS, assurance_outcome: MERGE_READY, codex_exit: 0}
+    RUN-P292: {group: G1, task_outcome: PASS, assurance_outcome: NOT_APPLICABLE, codex_exit: 0}
+    RUN-P293: {group: G2, task_outcome: PASS, assurance_outcome: NOT_APPLICABLE, codex_exit: 0}
+    RUN-P294: {group: G0, task_outcome: PASS, assurance_outcome: NOT_APPLICABLE, codex_exit: 0}
+group_isolation:
+  adjacent_freeze_comparisons_identical: 3
+validated_findings:
+  - id: P2-PF-004
+    class: EXECUTION_CONTRACT
+    summary: The corrected global/exec argv contract started and completed all four Agent sessions.
+  - id: P2-PF-005
+    class: G3_ASSURANCE
+    summary: AEH 0.2.0 completed RED, GREEN and validator replay with overall MERGE_READY.
+warnings:
+  - id: P2-PF-006
+    class: EVIDENCE_CAPTURE
+    summary: G3 runner decoded Codex stdout with the Windows GBK default; a UTF-8 byte caused JSONL transcript truncation. Controller artifacts, final message, source diff and replay remain intact.
+required_before_formal_run:
+  - Make G3 runner capture Codex stdout/stderr with explicit UTF-8 and replacement-safe decoding.
+  - Add a deterministic non-ASCII capture regression test and validate it without a model call.
+  - Obtain separate Owner authorization for the formal 72-run.
+phase2_72_run:
+  authorized: false
+attack_runs:
+  authorized: false
+value_conclusion_allowed: false
+verdict: PREFLIGHT_VALIDATED_WITH_CAPTURE_WARNING
+next: STOP_FOR_CAPTURE_FIX_AND_OWNER_REVIEW
