@@ -23,3 +23,8 @@ Phase 2 v1.8 的四单元预检记录在 `PHASE_2_PREFLIGHT_V1_8.md` 与
 Phase 2 v1.9 的四单元预检记录在 `PHASE_2_PREFLIGHT_V1_9.md` 与
 `phase2-preflight-v1.9-verdict.yaml`。四组功能均通过且 G3 达到 `MERGE_READY`，但 G3 stdout
 存在 Windows GBK/UTF-8 捕获警告；正式执行前需修复采集器，72-run 与 A01–A08 仍未授权。
+
+Phase 2 v1.10 的正式 72-run 记录在 `PHASE_2_FORMAL_V1_10.md` 与
+`phase2-formal-v1.10-verdict.yaml`。72/72 精确终态、捕获完整，正式结论为 `REPOSITION`：
+G1 18/18、G2 17/18，而 G3 仅 4/18 达到完整可信成功，并观察到一次 Agent 机器真值直写被
+verifier 错误接受。A01–A08 未执行，攻击 Gate 仍不可判定。
