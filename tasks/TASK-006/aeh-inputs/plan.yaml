@@ -1,0 +1,14 @@
+tests:
+  - id: TEST-001
+    verifies: [AC-001-01, AC-002-01]
+    kind: contract
+    intent: "验证奖励领取幂等性且不阻断不同 claim_id"
+    command: "python -m unittest tests.test_reward_idempotency -v"
+    targets: ["src/rewards.py"]
+    required: true
+    expected_before_fix:
+      type: behavior_failure
+      signature: "AssertionError: DuplicateClaimError not raised"
+test_files:
+  - src: test_reward_idempotency.py
+    dest: tests/test_reward_idempotency.py

@@ -19,6 +19,8 @@ import subprocess
 import sys
 import time
 
+import yaml
+
 
 def _log(evidence_dir, name, text):
     with open(os.path.join(evidence_dir, name), "w", encoding="utf-8") as f:
@@ -68,6 +70,72 @@ def _sha256_file(path):
         for chunk in iter(lambda: f.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _load_scope_template(scope_template):
+    with open(scope_template, "r", encoding="utf-8") as stream:
+        return yaml.safe_load(stream)
+
+
+def _capture_scope_before(scope_template, workdir, evidence_dir):
+    """Capture working-tree bytes after RED and before the coding Agent runs."""
+    scope = _load_scope_template(scope_template)
+    changed_files = scope.get("changed_files") or []
+    if not changed_files:
+        raise ValueError("scope template has no changed_files")
+    root = os.path.realpath(workdir)
+    snapshot = {}
+    for item in changed_files:
+        relative_path = str(item.get("path") or "").replace("\\", "/")
+        if not relative_path:
+            raise ValueError("scope changed_files entry has no path")
+        absolute_path = os.path.realpath(os.path.join(root, *relative_path.split("/")))
+        if os.path.commonpath([root, absolute_path]) != root:
+            raise ValueError("scope path escapes workdir: " + relative_path)
+        if not os.path.isfile(absolute_path):
+            raise ValueError("scope path does not exist before coding: " + relative_path)
+        clean = subprocess.run(
+            ["git", "-C", workdir, "diff", "--quiet", "--", relative_path])
+        if clean.returncode != 0:
+            raise ValueError("scope path is dirty before coding: " + relative_path)
+        before_hash = _sha256_file(absolute_path)
+        expected_before = item.get("before_hash")
+        if expected_before not in (None, "TO_BE_CAPTURED_BEFORE_CODE", before_hash):
+            raise ValueError("scope before_hash mismatch: " + relative_path)
+        snapshot[relative_path] = before_hash
+
+    snapshot_path = os.path.join(evidence_dir, "scope-before.yaml")
+    with open(snapshot_path, "w", encoding="utf-8") as stream:
+        yaml.safe_dump({"before_hashes": snapshot}, stream, sort_keys=True)
+    return snapshot
+
+
+def _materialize_scope(scope_template, workdir, evidence_dir, before_snapshot):
+    """Fill task-specific scope hashes without assuming a source-file name."""
+    scope = _load_scope_template(scope_template)
+    changed_files = scope.get("changed_files") or []
+    root = os.path.realpath(workdir)
+    hash_lines = []
+    for item in changed_files:
+        relative_path = str(item.get("path") or "").replace("\\", "/")
+        absolute_path = os.path.realpath(os.path.join(root, *relative_path.split("/")))
+        if os.path.commonpath([root, absolute_path]) != root:
+            raise ValueError("scope path escapes workdir: " + relative_path)
+        if not os.path.isfile(absolute_path):
+            raise ValueError("scope path does not exist after coding: " + relative_path)
+        before_hash = before_snapshot.get(relative_path)
+        if not before_hash:
+            raise ValueError("scope path has no trusted before snapshot: " + relative_path)
+        after_hash = _sha256_file(absolute_path)
+        item["before_hash"] = before_hash
+        item["after_hash"] = after_hash
+        hash_lines.append("%s before=%s after=%s" % (relative_path, before_hash, after_hash))
+
+    scope_path = os.path.join(evidence_dir, "scope-applied.yaml")
+    with open(scope_path, "w", encoding="utf-8") as stream:
+        yaml.safe_dump(scope, stream, sort_keys=False, allow_unicode=True)
+    _log(evidence_dir, "scope-hashes.txt", "\n".join(hash_lines) + "\n")
+    return scope_path
 
 
 def main(argv=None):
@@ -150,6 +218,12 @@ def main(argv=None):
     if status != "RED_COMPLETE" or "VALID_RED" not in out:
         return stop("red status=%s (expected RED_COMPLETE + VALID_RED)" % status)
 
+    try:
+        scope_before = _capture_scope_before(
+            args.scope_template, workdir, args.evidence_dir)
+    except ValueError as error:
+        return stop("scope before capture: " + str(error))
+
     # 8. Codex coding task only
     with open(args.prompt_file, "r", encoding="utf-8") as f:
         prompt = f.read().strip()
@@ -167,17 +241,12 @@ def main(argv=None):
     if proc.returncode != 0:
         return stop("codex exit=%d" % proc.returncode)
 
-    # 9. green with dynamically computed scope hashes
-    after = _sha256_file(os.path.join(workdir, "src", "main.py"))
-    proc = subprocess.run(["git", "-C", workdir, "show", "HEAD:src/main.py"],
-                          capture_output=True, text=True)
-    before = hashlib.sha256(proc.stdout.encode("utf-8")).hexdigest() if proc.returncode == 0 else ""
-    with open(args.scope_template, "r", encoding="utf-8") as f:
-        scope_text = f.read().replace("TO_BE_FILLED_AFTER_HASH", after)
-    scope_path = os.path.join(args.evidence_dir, "scope-applied.yaml")
-    with open(scope_path, "w", encoding="utf-8") as f:
-        f.write(scope_text)
-    _log(args.evidence_dir, "scope-hashes.txt", "before=%s\nafter=%s\n" % (before, after))
+    # 9. green with dynamically computed task-specific scope hashes
+    try:
+        scope_path = _materialize_scope(
+            args.scope_template, workdir, args.evidence_dir, scope_before)
+    except ValueError as error:
+        return stop("scope materialization: " + str(error))
     code, status, out = _run_aeh(args.aeh, ["change", "green", change_id, "--scope", scope_path],
                                  workdir, args.evidence_dir, "08-green")
     steps.append(("green", code, status))

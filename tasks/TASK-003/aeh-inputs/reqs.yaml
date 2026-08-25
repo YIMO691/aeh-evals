@@ -1,0 +1,9 @@
+requirements:
+  - behavior: "paginate() 必须按 1-based 页码计算切片起点"
+    acceptance:
+      - type: invariant
+        statement: "page=1,size=3 返回前三项，page=3 返回第 7 至 9 项"
+  - behavior: "末页不足一页时返回剩余项"
+    acceptance:
+      - type: invariant
+        statement: "10 项数据的 page=4,size=3 返回最后一项"

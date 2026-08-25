@@ -1,0 +1,60 @@
+protocol_version: "1.7"
+schedule_id: AEH-PHASE2-V1.7-SCHEDULE-001
+status: COMMITTED_NOT_AUTHORIZED
+algorithm: "sort UTF-8 SHA256(seed|task_id|repetition), then sort groups by SHA256(block_key|group)"
+seed: AEH-PHASE2-V1.7-20260825
+blocks:
+  - task_id: TASK-004
+    repetition: 1
+    groups: [G3, G1, G2, G0]
+  - task_id: TASK-002
+    repetition: 1
+    groups: [G2, G0, G1, G3]
+  - task_id: TASK-003
+    repetition: 2
+    groups: [G3, G2, G0, G1]
+  - task_id: TASK-006
+    repetition: 3
+    groups: [G2, G1, G3, G0]
+  - task_id: TASK-005
+    repetition: 1
+    groups: [G2, G1, G0, G3]
+  - task_id: TASK-005
+    repetition: 3
+    groups: [G0, G2, G3, G1]
+  - task_id: TASK-003
+    repetition: 3
+    groups: [G0, G1, G2, G3]
+  - task_id: TASK-006
+    repetition: 1
+    groups: [G0, G2, G1, G3]
+  - task_id: TASK-003
+    repetition: 1
+    groups: [G3, G0, G1, G2]
+  - task_id: TASK-001
+    repetition: 2
+    groups: [G0, G2, G3, G1]
+  - task_id: TASK-002
+    repetition: 2
+    groups: [G0, G3, G2, G1]
+  - task_id: TASK-006
+    repetition: 2
+    groups: [G3, G1, G2, G0]
+  - task_id: TASK-005
+    repetition: 2
+    groups: [G0, G2, G1, G3]
+  - task_id: TASK-002
+    repetition: 3
+    groups: [G0, G1, G3, G2]
+  - task_id: TASK-004
+    repetition: 2
+    groups: [G0, G3, G2, G1]
+  - task_id: TASK-001
+    repetition: 3
+    groups: [G0, G2, G3, G1]
+  - task_id: TASK-001
+    repetition: 1
+    groups: [G2, G0, G3, G1]
+  - task_id: TASK-004
+    repetition: 3
+    groups: [G3, G2, G1, G0]

@@ -1,0 +1,9 @@
+requirements:
+  - behavior: "load_settings() 必须反映同一路径文件的后续内容变化"
+    acceptance:
+      - type: automated
+        statement: "首次读取 host=old 后覆盖为 host=new，再次 get() 返回 new"
+  - behavior: "既有 key=value 解析和默认值行为保持不变"
+    acceptance:
+      - type: automated
+        statement: "现有 settings 测试继续通过"

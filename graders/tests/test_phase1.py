@@ -1,7 +1,10 @@
 import os
 import shutil
+import subprocess
 import tempfile
 import unittest
+
+import yaml
 
 from aeh_eval_grader import aeh_exec, attack, g3_runner, manifest, outcome, report, restore, secrecy, sufficiency
 from aeh_eval_grader.paths import repo_root
@@ -143,6 +146,38 @@ class TestG3RunnerCommand(unittest.TestCase):
             command,
             ["aeh", "change", "verify", "CHG-1", "--workdir", "C:/work"],
         )
+
+    def test_scope_materialization_is_task_specific(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = os.path.join(tmp, "work")
+            evidence = os.path.join(tmp, "evidence")
+            os.makedirs(os.path.join(work, "src"))
+            os.makedirs(evidence)
+            source = os.path.join(work, "src", "other.py")
+            with open(source, "w", encoding="utf-8", newline="\n") as stream:
+                stream.write("value = 1\n")
+            subprocess.run(["git", "init", "-q", work], check=True)
+            subprocess.run(["git", "-C", work, "config", "user.email", "test@example.invalid"], check=True)
+            subprocess.run(["git", "-C", work, "config", "user.name", "Test"], check=True)
+            subprocess.run(["git", "-C", work, "add", "src/other.py"], check=True)
+            subprocess.run(["git", "-C", work, "commit", "-qm", "baseline"], check=True)
+            template = os.path.join(tmp, "scope.yaml")
+            with open(template, "w", encoding="utf-8") as stream:
+                stream.write(
+                    "changed_files:\n"
+                    "  - path: src/other.py\n"
+                    "    before_hash: TO_BE_CAPTURED_BEFORE_CODE\n"
+                    "    after_hash: TO_BE_FILLED_AFTER_HASH\n"
+                    "allowed_paths:\n  - src/other.py\n")
+            before = g3_runner._capture_scope_before(template, work, evidence)
+            with open(source, "w", encoding="utf-8", newline="\n") as stream:
+                stream.write("value = 2\n")
+            rendered = g3_runner._materialize_scope(template, work, evidence, before)
+            with open(rendered, "r", encoding="utf-8") as stream:
+                data = yaml.safe_load(stream)
+            self.assertEqual(data["changed_files"][0]["path"], "src/other.py")
+            self.assertEqual(data["changed_files"][0]["before_hash"], before["src/other.py"])
+            self.assertEqual(data["changed_files"][0]["after_hash"], g3_runner._sha256_file(source))
 
 
 class TestSufficiency(unittest.TestCase):
