@@ -1,0 +1,72 @@
+protocol_version: "1.10"
+baseline_id: AEH-PHASE2-V1.10-BASELINE-001
+status: READY_FOR_FORMAL_OWNER_GATE
+phase2_72_run:
+  authorized: false
+attack_runs:
+  authorized: false
+
+historical_freeze:
+  protocol_version: "1.6"
+  path: protocol/FREEZE-v1.6.md
+  sha256: 434291cc3bdbc8412b84d2678f1db21253b0c3cd7cd26649dc99b929b66fe06f
+  rewrite_allowed: false
+
+correction_basis:
+  path: reports/phase2-preflight-v1.9-verdict.yaml
+  sha256: 8ceaba8218e2498cf29aca1161807b990b48d7bef0273878f209da99974091b5
+  verdict: PREFLIGHT_VALIDATED_WITH_CAPTURE_WARNING
+
+evaluator:
+  repository: https://github.com/YIMO691/aeh-evals
+  phase2_v1_9_preflight_report_merge_commit: a587cce5f695a4763bae550e4e43980831e196b5
+
+aeh_treatment:
+  repository: https://github.com/YIMO691/aeh
+  version: 0.2.0
+  tag: v0.2.0
+  commit: a914f83b852dc57be946c995f2dc4ec58ac7d208
+  wheel:
+    name: adaptive_engineering_harness-0.2.0-py3-none-any.whl
+    size_bytes: 121717
+    sha256: 8fc11f9b42cd90fb4e4d1b64380e429d9ad19d80cacfc76396c0b46f59b3ed19
+    url: https://github.com/YIMO691/aeh/releases/download/v0.2.0/adaptive_engineering_harness-0.2.0-py3-none-any.whl
+  execution_mode: external_aeh_assurance_runner_route_b
+
+codex_execution:
+  version: "0.149.0"
+  model: gpt-5.6-terra
+  argv_prefix:
+    - --ask-for-approval
+    - never
+    - --model
+    - gpt-5.6-terra
+    - --sandbox
+    - workspace-write
+    - --config
+    - 'windows.sandbox="unelevated"'
+    - exec
+    - --ephemeral
+    - --ignore-user-config
+    - --json
+
+transcript_capture:
+  encoding: utf-8
+  errors: replace
+  applies_to: [aeh_controller, codex_session]
+  no_model_regressions: [non_ascii_utf8, invalid_utf8_replacement]
+
+g3_bootstrap_answers:
+  path: environments/G3-assets/answers-v1.8.yaml
+  sha256: acb6e46a35117f7fa229dd6638ce6e4d415fb0941976f4ba532ed1d001a8dcc7
+
+schedule:
+  path: protocol/phase2-v1.10/SCHEDULE.yaml
+  policy: inherited_v1_9_stratified_randomization
+  expected_blocks: 18
+  expected_runs: 72
+
+input_manifest:
+  path: protocol/phase2-v1.10/INPUTS.sha256
+  sha256: 7f8155b2b16905b34646d8aee4a688a7cdc493102f19fff6cac8eff8212ace19
+  entries: 84
