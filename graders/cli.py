@@ -81,6 +81,9 @@ def main(argv=None):
     from .aeh_eval_grader import phase2_v18_readiness as phase2_v18_readiness_mod
     sub.add_parser("phase2-v1.8-readiness", help="validate the corrected Phase 2 v1.8 candidate package")
     sub.add_parser("phase2-v1.8-input-manifest", help="render the canonical Phase 2 v1.8 input manifest")
+    from .aeh_eval_grader import phase2_v19_readiness as phase2_v19_readiness_mod
+    sub.add_parser("phase2-v1.9-readiness", help="validate the corrected Phase 2 v1.9 candidate package")
+    sub.add_parser("phase2-v1.9-input-manifest", help="render the canonical Phase 2 v1.9 input manifest")
 
     sf = sub.add_parser("sufficiency", help="check run bundle required files")
     sf.add_argument("--run-dir", required=True)
@@ -228,6 +231,20 @@ def main(argv=None):
 
     if args.cmd == "phase2-v1.8-input-manifest":
         sys.stdout.write(phase2_v18_readiness_mod.render_input_manifest())
+        return 0
+
+    if args.cmd == "phase2-v1.9-readiness":
+        result = phase2_v19_readiness_mod.compute()
+        print(result["verdict"])
+        print("planned_blocks=" + str(result["planned_blocks"]))
+        print("planned_runs=" + str(result["planned_runs"]))
+        print("phase2_authorized=" + str(result["phase2_authorized"]).lower())
+        for error in result["errors"]:
+            print("  - " + error)
+        return 0 if not result["errors"] else 1
+
+    if args.cmd == "phase2-v1.9-input-manifest":
+        sys.stdout.write(phase2_v19_readiness_mod.render_input_manifest())
         return 0
 
     if args.cmd == "sufficiency":
