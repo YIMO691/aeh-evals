@@ -12,3 +12,6 @@ Phase 1.1 的冲突消解顺序固定为：原始 run evidence → `run.yaml` �
 
 完整 session/run 原始证据保存在内部证据包。公开仓库提交脱敏报告、机器判定与
 `phase1-1-evidence-manifest.sha256`，不把被忽略的本地 run 目录伪装成公开可复现资产。
+
+Phase 2 v1.7 的四次执行机制预检记录在 `PHASE_2_PREFLIGHT_V1_7.md` 与
+`phase2-preflight-v1.7-verdict.yaml`。该预检因环境契约失败，不产生价值结论，正式执行仍未授权。

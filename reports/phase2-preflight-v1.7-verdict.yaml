@@ -1,0 +1,41 @@
+protocol_version: "1.7"
+preflight_id: AEH-PHASE2-V1.7-PREFLIGHT-001
+date: "2026-08-25"
+evaluator_commit: ddb37a427cc9ce7c0064addd834f2b946389fdf1
+scope:
+  task_id: TASK-004
+  repetition: 1
+  scheduled_groups: [G3, G1, G2, G0]
+runs:
+  expected: 4
+  agent_invocations: 4
+  schema_valid: 4
+  secrecy_pass: 4
+  self_sufficient: 4
+  task_pass: 0
+  outcomes:
+    RUN-P201: {group: G3, task_outcome: FAIL, assurance_outcome: BLOCKED}
+    RUN-P202: {group: G1, task_outcome: FAIL, assurance_outcome: NOT_APPLICABLE}
+    RUN-P203: {group: G2, task_outcome: FAIL, assurance_outcome: NOT_APPLICABLE}
+    RUN-P204: {group: G0, task_outcome: FAIL, assurance_outcome: NOT_APPLICABLE}
+group_isolation:
+  adjacent_freeze_comparisons_identical: 3
+blocking_findings:
+  - id: P2-PF-001
+    class: OPERATOR_ENVIRONMENT_CONTRACT
+    summary: --ignore-rules blocked Codex shell execution in all groups.
+  - id: P2-PF-002
+    class: G3_TREATMENT_CONTRACT
+    summary: G3 bootstrap omitted explicit answers, leaving shell and source modification at ask in a headless run.
+required_before_rerun:
+  - Remove --ignore-rules and prove workspace-write helper operation before an Agent invocation.
+  - Add a frozen AEH answers file and pass it to G3 bootstrap.
+  - Issue a new protocol candidate and rerun all four cells under separate Owner authorization.
+phase2_72_run:
+  authorized: false
+attack_runs:
+  authorized: false
+value_conclusion_allowed: false
+verdict: PREFLIGHT_FAILED_ENVIRONMENT_CONTRACT
+next: STOP_FOR_PROTOCOL_CORRECTION_AND_OWNER_GATE
+
