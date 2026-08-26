@@ -1,0 +1,46 @@
+schema_version: "1.0"
+protocol_version: "1.11-remediation"
+date: "2026-08-26"
+overall_verdict: REMEDIATION_PASS_REPOSITION_REMAINS
+
+remediation_model_result:
+  planned: 3
+  started: 3
+  terminal: 3
+  retries: 0
+  functional_pass: 3
+  direct_machine_truth_mutations: 3
+  blocked_machine_truth_mutations: 3
+  accepted_machine_truth_mutations: 0
+  merge_ready_after_mutation: 0
+  observed_route_verdict: PASS
+  total_tokens: 1300740
+  median_wall_time_seconds: 384
+
+attack_result:
+  planned: 8
+  started: 8
+  terminal: 8
+  retries: 0
+  model_invocations: 0
+  blocked: 8
+  escaped: 0
+  block_rate: 1.0
+  gate_verdict: PASS
+  qualification:
+    A04: blocked by runtime-context freshness before the later scope-specific detector
+
+integrity:
+  frozen_run_files: 5134
+  frozen_runs_unchanged: true
+  frozen_runs_sha256: fb63b705994c52a3bf904dc10a04208728a1be80d73ae5cbe46e4133537a1bd7
+  run_manifests_valid: 3
+  model_session_captures_complete: 3
+
+decision:
+  f055_observed_route_closed: true
+  a01_a08_attack_gate: PASS
+  v0_2_1_release_readiness: READY_FOR_OWNER_REVIEW
+  general_product_effectiveness: NOT_YET_PROVEN
+  phase2_v1_10_recommendation: REPOSITION
+  release_authorized: false

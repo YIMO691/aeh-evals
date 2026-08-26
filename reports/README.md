@@ -28,3 +28,8 @@ Phase 2 v1.10 的正式 72-run 记录在 `PHASE_2_FORMAL_V1_10.md` 与
 `phase2-formal-v1.10-verdict.yaml`。72/72 精确终态、捕获完整，正式结论为 `REPOSITION`：
 G1 18/18、G2 17/18，而 G3 仅 4/18 达到完整可信成功，并观察到一次 Agent 机器真值直写被
 verifier 错误接受。A01–A08 未执行，攻击 Gate 仍不可判定。
+
+Phase 2 v1.11 remediation 记录在 `PHASE_2_REMEDIATION_V1_11.md` 与
+`phase2-remediation-v1.11-verdict.yaml`。v0.2.1 在三次 TASK-002/G3 有界复测中阻断了 3/3
+实际 Agent 机器真值直写；A01–A08 为 8/8 BLOCKED、0 ESCAPED。补丁达到 Owner release
+review readiness，但总体产品有效性仍为 `NOT_YET_PROVEN`，v1.10 的 `REPOSITION` 不变。
