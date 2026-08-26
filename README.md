@@ -20,8 +20,8 @@ G3 + AEH（第二阶段加 G4 近邻方案）。试点规模 6 任务 × 4 组 �
 2. `protocol/decision-gates.yaml` — 实验前冻结的成功阈值。
 3. `environments/RUNBOOK.md` — 72-run 执行手册（真实实验步骤均标 USER_RUNTIME）。
 
-Phase 2 的新候选执行面见 `protocol/phase2-v1.7/` 与
-`environments/PHASE_2_RUNBOOK-v1.7.md`；它修正执行顺序并固定 AEH v0.2.0，但仍未获运行授权。
+Phase 2 的正式结果见 `reports/PHASE_2_FORMAL_V1_10.md`。v0.2.1 的有界修复复测和
+A01–A08 结果见 `reports/PHASE_2_REMEDIATION_V1_11.md`。
 
 ## 目录
 
@@ -46,8 +46,9 @@ Phase 2 的新候选执行面见 `protocol/phase2-v1.7/` 与
 - Phase 1 v1.5：历史 dry-run，证据命名空间 `EVAL-P1-*`。
 - Phase 1.1 v1.6：`PHASE_1_1_FROZEN_AND_REPLAYED`，证据命名空间 `EVAL-P11-*`。
 - Phase 1.1 只验证冻结协议和 External Runner 最小机制，不证明 AEH 产品有效性。
-- Phase 2 / 72-run：`authorized=false`；当前动作是 `STOP`。
-- Phase 2 v1.7 readiness：协议增量、确定性分层日程与 AEH v0.2.0 精确基线已进入
-  `READY_FOR_PREFLIGHT` 候选；这不等于允许 preflight 或正式运行。
+- Phase 2 v1.10：正式 72-run 已完成，推荐结论为 `REPOSITION`。
+- Phase 2 v1.11 remediation：三次修复复测阻断 3/3 机器真值直写；A01–A08 为
+  8/8 BLOCKED、0 ESCAPED；v0.2.1 达到 Owner release review readiness。
+- 总体产品有效性仍为 `NOT_YET_PROVEN`；上述结果不授权发布或改变选择性使用定位。
 
 详见 `reports/PHASE_1_1_RESULT.md` 与 `reports/PHASE_1_1_CLOSURE.md`。

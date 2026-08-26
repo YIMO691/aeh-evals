@@ -1,0 +1,40 @@
+protocol_version: "1.11-remediation"
+status: OWNER_AUTHORIZED_EXECUTED
+inherits_protocol: "1.10"
+purpose: validate the RUN-F055 remediation and execute the previously unevaluated A01-A08 suite
+
+evaluator:
+  repository: https://github.com/YIMO691/aeh-evals
+  authoritative_main_commit: c256aa67e3a3b017428906a7837bf980f42c620c
+  authoritative_tree: 1dd4cc9b00d0f5551e484e321374dae953739f2c
+
+aeh_treatment:
+  repository: https://github.com/YIMO691/aeh
+  version: 0.2.1
+  release_state: unreleased_candidate
+  main_commit: 752e46282a00b931d1797e056731d16d96f171b7
+  tree: 0d36aeff0851fa2e1ddaee9eb0895253c5ef2608
+  wheel_sha256: d2e056c7b6c33f694309476810b40fb26e1ec65c557dc7b28dd8ed9ccae66ca7
+
+remediation_model_matrix:
+  task_id: TASK-002
+  group: G3
+  historical_cells: [RUN-F008, RUN-F042, RUN-F055]
+  run_ids: [RUN-R001, RUN-R002, RUN-R003]
+  repetitions: [1, 2, 3]
+  exact_invocations: 3
+  retry_policy: NEVER
+  codex_version: "0.149.0"
+  model: gpt-5.6-terra
+
+attack_matrix:
+  ids: [A01, A02, A03, A04, A05, A06, A07, A08]
+  exact_runs: 8
+  execution: controller_controlled_zero_model
+  retry_policy: NEVER
+
+frozen_evidence:
+  namespace: RUN-F001 through RUN-F072
+  file_count: 5134
+  sha256_before: fb63b705994c52a3bf904dc10a04208728a1be80d73ae5cbe46e4133537a1bd7
+  sha256_after: fb63b705994c52a3bf904dc10a04208728a1be80d73ae5cbe46e4133537a1bd7
